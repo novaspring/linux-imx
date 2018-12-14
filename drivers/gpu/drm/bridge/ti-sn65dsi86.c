@@ -71,6 +71,10 @@
 #define SN_ML_TX_MODE_REG			0x96
 #define  ML_TX_MAIN_LINK_OFF			0
 #define  ML_TX_NORMAL_MODE			BIT(0)
+#define SN_V0_EN_REG				0xC0
+#define SN_V1_EN_REG				0xC1
+#define SN_V2_EN_REG				0xC2
+#define SN_V3_EN_REG				0xC3
 #define SN_AUX_CMD_STATUS_REG			0xF4
 #define  AUX_IRQ_STATUS_AUX_RPLY_TOUT		BIT(3)
 #define  AUX_IRQ_STATUS_AUX_SHORT		BIT(5)
@@ -671,6 +675,12 @@ static void ti_sn_bridge_enable(struct drm_bridge *bridge)
 	val = CHA_DSI_LANES(4 - pdata->dsi->lanes);
 	regmap_update_bits(pdata->regmap, SN_DSI_LANES_REG,
 			   CHA_DSI_LANES_MASK, val);
+
+	/* Enable maximum output swing */
+	regmap_write(pdata->regmap, SN_V0_EN_REG, 0xFF);
+	regmap_write(pdata->regmap, SN_V1_EN_REG, 0xFF);
+	regmap_write(pdata->regmap, SN_V2_EN_REG, 0xFF);
+	regmap_write(pdata->regmap, SN_V3_EN_REG, 0xFF);
 
 	/* set dsi clk frequency value */
 	ti_sn_bridge_set_dsi_rate(pdata);
