@@ -53,6 +53,8 @@
 #define  BPP_18_RGB				BIT(0)
 #define SN_HPD_DISABLE_REG			0x5C
 #define  HPD_DISABLE				BIT(0)
+#define  HPD_ENABLE					0x0
+#define  HPD_STATUS					BIT(4)
 #define SN_AUX_WDATA_REG(x)			(0x64 + (x))
 #define SN_AUX_ADDR_19_16_REG			0x74
 #define SN_AUX_ADDR_15_8_REG			0x75
@@ -79,6 +81,18 @@
 #define  AUX_IRQ_STATUS_AUX_RPLY_TOUT		BIT(3)
 #define  AUX_IRQ_STATUS_AUX_SHORT		BIT(5)
 #define  AUX_IRQ_STATUS_NAT_I2C_FAIL		BIT(6)
+#define SN_IRQ_EN_REG				0xE0
+#define  IRQ_EN						BIT(0)
+#define SN_IRQ_HPD_REG				0xE6
+#define  IRQ_HPD_EN					BIT(0)
+#define  IRQ_HPD_INSERTION_EN		BIT(1)
+#define  IRQ_HPD_REMOVAL_EN			BIT(2)
+#define  IRQ_HPD_REPLUG_EN			BIT(3)
+#define SN_AUX_HPD_STATUS_REG		0xF5
+#define  HPD_IRQ_STATUS				BIT(0)
+#define  HPD_INSERTION_EVENT		BIT(1)
+#define  HPD_REMOVAL_EVENT			BIT(2)
+#define  HPD_REPLUG_EVENT			BIT(3)
 #define SN_PAGE_REG				0xFF
 #define SN_ASSR_OVRR_REG			0x16
 
@@ -107,6 +121,7 @@ struct ti_sn_bridge {
 	struct gpio_desc		*enable_gpio;
 	struct regulator_bulk_data	supplies[SN_REGULATOR_SUPPLY_NUM];
 	int				dp_lanes;
+	int				irq;
 };
 
 static const struct regmap_range ti_sn_bridge_volatile_ranges[] = {
@@ -235,12 +250,14 @@ static struct drm_connector_helper_funcs ti_sn_bridge_connector_helper_funcs = {
 static enum drm_connector_status
 ti_sn_bridge_connector_detect(struct drm_connector *connector, bool force)
 {
-	/**
-	 * TODO: Currently if drm_panel is present, then always
-	 * return the status as connected. Need to add support to detect
-	 * device state for hot pluggable scenarios.
-	 */
-	return connector_status_connected;
+	struct ti_sn_bridge *pdata = connector_to_ti_sn_bridge(connector);
+	unsigned int status;
+
+	regmap_read(pdata->regmap, SN_HPD_DISABLE_REG, &status);
+	DRM_DEV_DEBUG_DRIVER(pdata->dev, "HPD status: %lx\n", status & HPD_STATUS);
+
+	return (status & HPD_STATUS) ?
+			connector_status_connected : connector_status_disconnected;
 }
 
 static const struct drm_connector_funcs ti_sn_bridge_connector_funcs = {
@@ -289,6 +306,12 @@ static int ti_sn_bridge_attach(struct drm_bridge *bridge)
 		DRM_ERROR("Failed to initialize connector with drm\n");
 		return ret;
 	}
+
+	if (pdata->irq > 0)
+		pdata->connector.polled = DRM_CONNECTOR_POLL_HPD;
+	else
+		pdata->connector.polled = DRM_CONNECTOR_POLL_CONNECT |
+			DRM_CONNECTOR_POLL_DISCONNECT;
 
 	drm_connector_helper_add(&pdata->connector,
 				 &ti_sn_bridge_connector_helper_funcs);
@@ -739,24 +762,8 @@ static void ti_sn_bridge_pre_enable(struct drm_bridge *bridge)
 	/* configure bridge ref_clk */
 	ti_sn_bridge_set_refclk_freq(pdata);
 
-	/*
-	 * HPD on this bridge chip is a bit useless.  This is an eDP bridge
-	 * so the HPD is an internal signal that's only there to signal that
-	 * the panel is done powering up.  ...but the bridge chip debounces
-	 * this signal by between 100 ms and 400 ms (depending on process,
-	 * voltage, and temperate--I measured it at about 200 ms).  One
-	 * particular panel asserted HPD 84 ms after it was powered on meaning
-	 * that we saw HPD 284 ms after power on.  ...but the same panel said
-	 * that instead of looking at HPD you could just hardcode a delay of
-	 * 200 ms.  We'll assume that the panel driver will have the hardcoded
-	 * delay in its prepare and always disable HPD.
-	 *
-	 * If HPD somehow makes sense on some future panel we'll have to
-	 * change this to be conditional on someone specifying that HPD should
-	 * be used.
-	 */
 	regmap_update_bits(pdata->regmap, SN_HPD_DISABLE_REG, HPD_DISABLE,
-			   HPD_DISABLE);
+			   HPD_ENABLE);
 
 	drm_panel_prepare(pdata->panel);
 }
@@ -875,11 +882,27 @@ static int ti_sn_bridge_parse_dsi_host(struct ti_sn_bridge *pdata)
 	return 0;
 }
 
+static irqreturn_t ti_sn_bridge_irq(int irq, void *data)
+{
+	struct ti_sn_bridge *pdata = data;
+	unsigned int status = 0;
+
+	/* Support only INSERTION and REMOVAL events */
+	regmap_read(pdata->regmap, SN_AUX_HPD_STATUS_REG, &status);
+	regmap_write(pdata->regmap, SN_AUX_HPD_STATUS_REG, status);
+
+	if ((status & HPD_REMOVAL_EVENT) || (status & HPD_INSERTION_EVENT))
+		drm_helper_hpd_irq_event(pdata->bridge.dev);
+
+	return IRQ_HANDLED;
+}
+
 static int ti_sn_bridge_probe(struct i2c_client *client,
 			      const struct i2c_device_id *id)
 {
 	struct ti_sn_bridge *pdata;
 	int ret;
+	unsigned int status = 0;
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		DRM_ERROR("device doesn't support I2C\n");
@@ -949,6 +972,24 @@ static int ti_sn_bridge_probe(struct i2c_client *client,
 	pdata->bridge.of_node = client->dev.of_node;
 
 	drm_bridge_add(&pdata->bridge);
+
+	if (client->irq > 0) {
+		pdata->irq = client->irq;
+		/* Clean-up interrupt reg */
+		regmap_read(pdata->regmap, SN_AUX_HPD_STATUS_REG, &status);
+		regmap_write(pdata->regmap, SN_AUX_HPD_STATUS_REG, status);
+
+		regmap_write(pdata->regmap, SN_IRQ_HPD_REG,
+						IRQ_HPD_INSERTION_EN | IRQ_HPD_REMOVAL_EN);
+		regmap_write_bits(pdata->regmap, SN_IRQ_EN_REG, IRQ_EN, IRQ_EN);
+
+		ret = devm_request_threaded_irq(pdata->dev, client->irq, NULL,
+									ti_sn_bridge_irq,
+									IRQF_ONESHOT, dev_name(pdata->dev),
+									pdata);
+		if (ret)
+			return ret;
+	}
 
 	ti_sn_debugfs_init(pdata);
 
