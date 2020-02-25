@@ -122,6 +122,7 @@ struct ti_sn_bridge {
 	struct regulator_bulk_data	supplies[SN_REGULATOR_SUPPLY_NUM];
 	int				dp_lanes;
 	int				irq;
+	int				dp_rate_idx;
 };
 
 static const struct regmap_range ti_sn_bridge_volatile_ranges[] = {
@@ -743,6 +744,9 @@ static void ti_sn_bridge_enable(struct drm_bridge *bridge)
 		return;
 	}
 
+	/* Saving succesful DP rate */
+	pdata->dp_rate_idx = dp_rate_idx;
+
 	/* config video parameters */
 	ti_sn_bridge_set_video_timings(pdata);
 
@@ -883,6 +887,8 @@ static irqreturn_t ti_sn_bridge_irq(int irq, void *data)
 {
 	struct ti_sn_bridge *pdata = data;
 	unsigned int status = 0;
+	u8 link_status[DP_LINK_STATUS_SIZE];
+	const char *last_err_str = "Retrain DP link";
 
 	/* Support only INSERTION and REMOVAL events */
 	regmap_read(pdata->regmap, SN_AUX_HPD_STATUS_REG, &status);
@@ -890,6 +896,14 @@ static irqreturn_t ti_sn_bridge_irq(int irq, void *data)
 
 	if ((status & HPD_REMOVAL_EVENT) || (status & HPD_INSERTION_EVENT))
 		drm_helper_hpd_irq_event(pdata->bridge.dev);
+
+	if (status & HPD_IRQ_STATUS) {
+		drm_dp_dpcd_read_link_status(&pdata->aux, link_status);
+		if (!drm_dp_channel_eq_ok(link_status, pdata->dp_lanes)) {
+			DRM_DEBUG_DRIVER("link EQ not ok, retraining.\n");
+			ti_sn_link_training(pdata, pdata->dp_rate_idx, &last_err_str);
+		}
+    }
 
 	return IRQ_HANDLED;
 }
@@ -981,7 +995,7 @@ static int ti_sn_bridge_probe(struct i2c_client *client,
 		regmap_write(pdata->regmap, SN_AUX_HPD_STATUS_REG, status);
 
 		regmap_write(pdata->regmap, SN_IRQ_HPD_REG,
-						IRQ_HPD_INSERTION_EN | IRQ_HPD_REMOVAL_EN);
+						IRQ_HPD_INSERTION_EN | IRQ_HPD_REMOVAL_EN | HPD_IRQ_STATUS);
 		regmap_write_bits(pdata->regmap, SN_IRQ_EN_REG, IRQ_EN, IRQ_EN);
 
 		ret = devm_request_threaded_irq(pdata->dev, client->irq, NULL,
