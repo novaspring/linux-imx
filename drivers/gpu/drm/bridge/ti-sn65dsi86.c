@@ -762,9 +762,6 @@ static void ti_sn_bridge_pre_enable(struct drm_bridge *bridge)
 	/* configure bridge ref_clk */
 	ti_sn_bridge_set_refclk_freq(pdata);
 
-	regmap_update_bits(pdata->regmap, SN_HPD_DISABLE_REG, HPD_DISABLE,
-			   HPD_ENABLE);
-
 	drm_panel_prepare(pdata->panel);
 }
 
@@ -972,6 +969,10 @@ static int ti_sn_bridge_probe(struct i2c_client *client,
 	pdata->bridge.of_node = client->dev.of_node;
 
 	drm_bridge_add(&pdata->bridge);
+
+	/* Enable Hot Plug detect (HPD) */
+	regmap_update_bits(pdata->regmap, SN_HPD_DISABLE_REG, HPD_DISABLE,
+			   HPD_ENABLE);
 
 	if (client->irq > 0) {
 		pdata->irq = client->irq;
