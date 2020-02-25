@@ -713,6 +713,8 @@ static void ti_sn_bridge_enable(struct drm_bridge *bridge)
 	regmap_write(pdata->regmap, SN_ASSR_OVRR_REG, 0x01);
 	regmap_write(pdata->regmap, SN_PAGE_REG, 0x00);
 	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, 0x03, 0x00);
+	/* Also disable Enhanced Framing */
+	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, 0x04, 0x00);
 
 	/* set dsi clk frequency value */
 	ti_sn_bridge_set_dsi_rate(pdata);
