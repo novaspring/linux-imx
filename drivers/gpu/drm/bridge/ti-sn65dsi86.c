@@ -903,6 +903,8 @@ static irqreturn_t ti_sn_bridge_irq(int irq, void *data)
 		drm_dp_dpcd_read_link_status(&pdata->aux, link_status);
 		if (!drm_dp_channel_eq_ok(link_status, pdata->dp_lanes)) {
 			DRM_DEBUG_DRIVER("link EQ not ok, retraining.\n");
+			/* Disable DP PLL before link retrain */
+			regmap_write(pdata->regmap, SN_PLL_ENABLE_REG, 0);
 			ti_sn_link_training(pdata, pdata->dp_rate_idx, &last_err_str);
 		}
     }
