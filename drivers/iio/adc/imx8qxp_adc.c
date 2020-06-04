@@ -21,6 +21,13 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 
+#include <linux/slab.h>
+#include <linux/hwmon.h>
+#include <linux/of.h>
+#include <linux/hwmon-sysfs.h>
+#include <linux/iio/consumer.h>
+#include <linux/iio/types.h>
+
 #include <linux/iio/iio.h>
 #include <linux/iio/driver.h>
 #include <linux/iio/sysfs.h>
@@ -188,9 +195,18 @@ struct imx8qxp_adc {
 	struct imx8qxp_adc_trigger_ctrl adc_trigger_ctrl[MAX_TRIG + 1];
 	struct imx8qxp_adc_cfg adc_cfg;
 	struct completion completion;
+
+	struct iio_channel *channels;
+	int hwmon_num_channels;
+	struct device *hwmon_dev;
+	struct attribute_group attr_group;
+	const struct attribute_group *groups[2];
+	struct attribute **attrs;
+
+	struct iio_dev *indio_dev;
 };
 
-#define IMX8QXP_ADC_CHAN(_idx) {					\
+#define IMX8QXP_ADC_CHAN(_idx) {				\
 	.type = IIO_VOLTAGE,					\
 	.indexed = 1,						\
 	.channel = (_idx),					\
@@ -508,6 +524,45 @@ static const struct of_device_id imx8qxp_adc_match[] = {
 };
 MODULE_DEVICE_TABLE(of, imx8qxp_adc_match);
 
+static ssize_t imx8qxp_adc_hwmon_read_val(struct device *dev,
+		  struct device_attribute *attr,
+		  char *buf)
+{
+	int result;
+	long ret;
+	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
+	struct imx8qxp_adc *adc = dev_get_drvdata(dev);
+	struct iio_dev *indio_dev = adc->indio_dev;
+
+/* copy pasted from imx8qxp_adc_read_raw IIO_CHAN_INFO_RAW */
+	pm_runtime_get_sync(adc->dev);
+	mutex_lock(&indio_dev->mlock);
+	reinit_completion(&adc->completion);
+	adc->channel_id = sattr->index;
+	adc->cmd_id = 1;
+	adc->trigger_id = 0;
+	imx8qxp_adc_mode_config(adc);
+	imx8qxp_adc_fifo_config(adc);
+	imx8qxp_adc_enable(adc);
+	imx8qxp_adc_start_trigger(adc);
+	ret = wait_for_completion_interruptible_timeout
+			(&adc->completion, IMX8QXP_ADC_TIMEOUT);
+	pm_runtime_mark_last_busy(adc->dev);
+	pm_runtime_put_sync_autosuspend(adc->dev);
+	if (ret == 0) {
+		mutex_unlock(&indio_dev->mlock);
+		return -ETIMEDOUT;
+	}
+	if (ret < 0) {
+		mutex_unlock(&indio_dev->mlock);
+		return ret;
+	}
+	result = adc->value;
+	mutex_unlock(&indio_dev->mlock);
+
+	return sprintf(buf, "%d\n", result);
+}
+
 static int imx8qxp_adc_probe(struct platform_device *pdev)
 {
 	struct imx8qxp_adc *adc;
@@ -515,6 +570,15 @@ static int imx8qxp_adc_probe(struct platform_device *pdev)
 	struct resource *mem;
 	int irq;
 	int ret;
+
+	struct device *dev = &pdev->dev;
+	struct sensor_device_attribute *a;
+	int i;
+	int in_i = 1;
+	enum iio_chan_type type;
+	struct iio_channel *channels;
+	const char *name = "imx8qxp-adc";
+	char *sname;
 
 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
 	if (!indio_dev) {
@@ -524,6 +588,7 @@ static int imx8qxp_adc_probe(struct platform_device *pdev)
 
 	adc = iio_priv(indio_dev);
 	adc->dev = &pdev->dev;
+	adc->indio_dev = indio_dev;
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	adc->regs = devm_ioremap_resource(&pdev->dev, mem);
@@ -618,8 +683,89 @@ static int imx8qxp_adc_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
+/* sysfs hwmon initialization */
+	channels = iio_channel_get_all(dev);
+	if (IS_ERR(channels)) {
+		ret = 1;
+		dev_err(&pdev->dev, "Couldn't get channels information.\n");
+		imx8qxp_adc_disable(adc);
+		goto error_iio_device_register;
+	}
+
+	adc->channels = channels;
+	adc->hwmon_num_channels = 0;
+	while (adc->channels[adc->hwmon_num_channels].indio_dev)
+		adc->hwmon_num_channels++;
+
+	adc->attrs = devm_kzalloc(dev,
+			 sizeof(*adc->attrs) * (adc->hwmon_num_channels + 1),
+			 GFP_KERNEL);
+	if (adc->attrs == NULL) {
+		ret = -ENOMEM;
+		dev_err(&pdev->dev, "Failed allocating attrs.\n");
+		goto error_release_channels;
+	}
+
+	for (i = 0; i < adc->hwmon_num_channels; i++) {
+		a = devm_kzalloc(dev, sizeof(*a), GFP_KERNEL);
+		if (a == NULL) {
+			ret = -ENOMEM;
+			dev_err(&pdev->dev, "Failed allocating sensor attribute.\n");
+			goto error_release_channels;
+		}
+
+		sysfs_attr_init(&a->dev_attr.attr);
+		ret = iio_get_channel_type(&adc->channels[i], &type);
+		if (ret < 0) {
+			dev_err(&pdev->dev, "Failed to get channel type.\n");
+			goto error_release_channels;
+		}
+
+		switch (type) {
+		case IIO_VOLTAGE:
+			a->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
+							"in%d_input",
+							in_i++);
+			break;
+		default:
+			ret = 1;
+			dev_err(&pdev->dev, "Invalid channel type.\n");
+			goto error_release_channels;
+		}
+		if (a->dev_attr.attr.name == NULL) {
+			ret = -ENOMEM;
+			dev_err(&pdev->dev, "Failed to create attr name.\n");
+			goto error_release_channels;
+		}
+		a->dev_attr.show = imx8qxp_adc_hwmon_read_val;
+		a->dev_attr.attr.mode = S_IRUGO;
+		a->index = i;
+		adc->attrs[i] = &a->dev_attr.attr;
+	}
+
+	adc->attr_group.attrs = adc->attrs;
+	adc->groups[0] = &adc->attr_group;
+
+	sname = devm_kstrdup(dev, name, GFP_KERNEL);
+	if (!sname) {
+		ret = -ENOMEM;
+		dev_err(&pdev->dev, "Failed allocating sname.\n");
+		goto error_release_channels;
+	}
+
+	strreplace(sname, '-', '_');
+	adc->hwmon_dev = hwmon_device_register_with_groups(dev, sname, adc,
+						  adc->groups);
+	if (IS_ERR(adc->hwmon_dev)) {
+		ret = 1;
+		dev_err(&pdev->dev, "Failed to register hwmon device.\n");
+		goto error_release_channels;
+	}
 	return 0;
 
+error_release_channels:
+	iio_channel_release_all(channels);
+	imx8qxp_adc_disable(adc);
 error_iio_device_register:
 	clk_disable_unprepare(adc->ipg_clk);
 error_adc_ipg_clk_enable:
@@ -636,6 +782,9 @@ static int imx8qxp_adc_remove(struct platform_device *pdev)
 	struct imx8qxp_adc *adc = iio_priv(indio_dev);
 
 	pm_runtime_get_sync(&pdev->dev);
+
+	hwmon_device_unregister(adc->hwmon_dev);
+	iio_channel_release_all(adc->channels);
 
 	iio_device_unregister(indio_dev);
 
