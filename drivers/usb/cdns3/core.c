@@ -75,6 +75,10 @@ static void cdns3_usb_phy_init(void __iomem *regs)
 
 	pr_debug("begin of %s\n", __func__);
 
+	/* recommended by nxp for improving eye compliance test */
+	writel(0x3f, regs + USB2PHY_OFFS + AFE_TX_REG1);
+	writel(0x03, regs + USB2PHY_OFFS + AFE_TX_REG12);
+
 	writel(0x0830, regs + PHY_PMA_CMN_CTRL1);
 	writel(0x10, regs + TB_ADDR_CMN_DIAG_HSCLK_SEL);
 	writel(0x00F0, regs + TB_ADDR_CMN_PLL0_VCOCAL_INIT_TMR);

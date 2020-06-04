@@ -171,4 +171,12 @@
 #define PS_MASK			(3 << 0)
 #define PS_D0			0
 #define PS_D1			(1 << 0)
+
+/* USB2 PHY register definition */
+/* USB2PHY(5B19_8000), PHY regs 0x5B160000 */
+
+#define USB2PHY_OFFS 		0x38000
+#define AFE_TX_REG1  		0x0004
+#define AFE_TX_REG12  		0x0030
+
 #endif /* __DRIVERS_USB_CDNS3_NXP_H */
