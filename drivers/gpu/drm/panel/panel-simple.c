@@ -806,6 +806,30 @@ static const struct panel_desc auo_g104sn02 = {
 	},
 };
 
+static const struct drm_display_mode lg_ld101wx1_sl01_mode = {
+	 .clock = 71000,
+	.hdisplay = 1280,
+	.hsync_start = 1280 + 48,
+	.hsync_end = 1280 + 48 + 32,
+	.htotal = 1280 + 48 + 32 + 80,
+	.vdisplay = 800,
+	.vsync_start = 800 + 2,
+	.vsync_end = 800 + 2 + 6,
+	.vtotal = 800 + 2 + 6 + 15,
+	.vrefresh = 60,
+	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC,
+};
+
+static const struct panel_desc lg_ld101wx1_sl01 = {
+	.modes = &lg_ld101wx1_sl01_mode,
+	.num_modes = 1,
+	.bpc = 8,
+	.size = {
+		.width = 229,
+		.height = 148,
+	},
+};
+
 static const struct display_timing auo_g133han01_timings = {
 	.pixelclock = { 134000000, 141200000, 149000000 },
 	.hactive = { 1920, 1920, 1920 },
@@ -3162,6 +3186,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "auo,t215hvn01",
 		.data = &auo_t215hvn01,
+	}, {
+		.compatible = "lg,ld101wx1-sl01",
+		.data = &lg_ld101wx1_sl01,
 	}, {
 		.compatible = "avic,tm070ddh03",
 		.data = &avic_tm070ddh03,
