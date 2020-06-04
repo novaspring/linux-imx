@@ -14,6 +14,7 @@
 #include <linux/thermal.h>
 
 #include "thermal_core.h"
+#include "thermal_hwmon.h"
 
 #define IMX_SC_MISC_FUNC_GET_TEMP	13
 #define IMX_SC_C_TEMP			0
@@ -181,7 +182,7 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
 	struct imx_sc_sensor *sensors;
 	const struct thermal_trip *trip;
 	u32 sensor_num;
-	int ret, i;
+	int ret, i, err;
 
 	ret = imx_scu_get_handle(&thermal_ipc_handle);
 	if (ret)
@@ -229,6 +230,10 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
 		trip = of_thermal_get_trip_points(sensor->tzd);
 		sensor->temp_passive = trip[0].temperature;
 		sensor->temp_critical = trip[1].temperature;
+
+		err = thermal_add_hwmon_sysfs(sensor->tzd);
+		if (err)
+			dev_warn(&pdev->dev, "Failed to add hwmon sysfs attributes\n");
 
 		sensor->cdev = devfreq_cooling_register();
 		if (IS_ERR(sensor->cdev)) {
