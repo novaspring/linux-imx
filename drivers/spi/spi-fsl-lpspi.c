@@ -17,6 +17,7 @@
 #include <linux/irq.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
@@ -1033,7 +1034,18 @@ static struct platform_driver fsl_lpspi_driver = {
 	.probe = fsl_lpspi_probe,
 	.remove = fsl_lpspi_remove,
 };
-module_platform_driver(fsl_lpspi_driver);
+
+static int __init fsl_lpspi_init(void)
+{
+	return platform_driver_register(&fsl_lpspi_driver);
+}
+late_initcall(fsl_lpspi_init);
+
+static void __exit fsl_lpspi_exit(void)
+{
+	platform_driver_unregister(&fsl_lpspi_driver);
+}
+module_exit(fsl_lpspi_exit);
 
 MODULE_DESCRIPTION("LPSPI Controller driver");
 MODULE_AUTHOR("Gao Pan <pandy.gao@nxp.com>");
