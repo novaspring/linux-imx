@@ -206,7 +206,7 @@
 		};
 
 		mipi0_dphy: dphy@56228300 {
-			compatible = "fsl,imx8qm-mipi-dphy";
+			compatible = "fsl,imx8qx-mipi-dphy";
 			reg = <0x56228300 0x100>;
 			clocks = <&clk IMX_SC_R_MIPI_0 IMX_SC_PM_CLK_PHY>;
 			clock-names = "phy_ref";
