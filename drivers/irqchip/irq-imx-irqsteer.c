@@ -4,6 +4,7 @@
  * Copyright (C) 2018 Pengutronix, Lucas Stach <kernel@pengutronix.de>
  */
 
+#include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -366,4 +367,14 @@ static struct platform_driver imx_irqsteer_driver = {
 	.probe = imx_irqsteer_probe,
 	.remove = imx_irqsteer_remove,
 };
-builtin_platform_driver(imx_irqsteer_driver);
+
+static int __init imx_irqsteer_init(void)
+{
+	return platform_driver_register(&imx_irqsteer_driver);
+}
+static void __exit imx_irqsteer_exit(void)
+{
+	platform_driver_unregister(&imx_irqsteer_driver);
+}
+module_exit(imx_irqsteer_exit);
+arch_initcall(imx_irqsteer_init);
