@@ -115,6 +115,8 @@ struct lpi2c_imx_struct {
 	unsigned int		txfifosize;
 	unsigned int		rxfifosize;
 	enum lpi2c_imx_mode	mode;
+	unsigned int		clklo;
+	unsigned int		clkhi;
 
 	struct i2c_bus_recovery_info rinfo;
 	struct pinctrl *pinctrl;
@@ -247,6 +249,11 @@ static int lpi2c_imx_config(struct lpi2c_imx_struct *lpi2c_imx)
 
 	if (prescale > 7)
 		return -EINVAL;
+
+	if (lpi2c_imx->clkhi && lpi2c_imx->clklo) {
+		clkhi = lpi2c_imx->clkhi;
+		clklo = lpi2c_imx->clklo;
+	}
 
 	/* set MCFGR1: PINCFG, PRESCALE, IGNACK */
 	if (lpi2c_imx->mode == ULTRA_FAST)
@@ -671,6 +678,11 @@ static int lpi2c_imx_probe(struct platform_device *pdev)
 				   "clock-frequency", &lpi2c_imx->bitrate);
 	if (ret)
 		lpi2c_imx->bitrate = LPI2C_DEFAULT_RATE;
+
+	of_property_read_u32(pdev->dev.of_node,
+			     "clkhi", &lpi2c_imx->clkhi);
+	of_property_read_u32(pdev->dev.of_node,
+			     "clklo", &lpi2c_imx->clklo);
 
 	i2c_set_adapdata(&lpi2c_imx->adapter, lpi2c_imx);
 	platform_set_drvdata(pdev, lpi2c_imx);
