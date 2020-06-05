@@ -2,14 +2,6 @@
 
 #include "kontron-samx8x-qxp.dts"
 
-&i2c0_cm40 {
-    status = "disabled";
-};
-
-&intmux_cm40 {
-    status = "disabled";
-};
-
 &flexcan1 {
     status = "disabled";
 };
