@@ -1931,6 +1931,325 @@ static const struct panel_desc koe_tx31d200vm0baa = {
 	.bus_format = MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,
 };
 
+static const struct drm_display_mode kontron_dp_mode = {
+	.clock = 162000,
+	.hdisplay = 1920,
+	.hsync_start = 1920 + 88,
+	.hsync_end = 1920 + 88 + 44,
+	.htotal = 1920 + 88 + 44 + 148,
+	.vdisplay = 1080,
+	.vsync_start = 1080 + 4,
+	.vsync_end = 1080 + 4 + 5,
+	.vtotal = 1080 + 4 + 5 + 36,
+	.vrefresh = 65.5,
+};
+
+static const struct drm_display_mode kontron_dp_modes[] = {
+// 640x480 57.143
+	{
+		.clock = 24000,
+		.hdisplay =     640,
+		.hsync_start =  656,
+		.hsync_end =    752,
+		.htotal =       800,
+		.vdisplay =     480,
+		.vsync_start =  490,
+		.vsync_end =    492,
+		.vtotal =       525,
+		.vrefresh = 57.143,
+	},
+
+// 640x480 73.964
+	{
+		.clock = 32000,
+		.hdisplay =     640,
+		.hsync_start =  664,
+		.hsync_end =    704,
+		.htotal =       832,
+		.vdisplay =     480,
+		.vsync_start =  489,
+		.vsync_end =    492,
+		.vtotal =       520,
+		.vrefresh = 73.964,
+	},
+
+// 640x480 78.571
+	{
+		.clock = 33000,
+		.hdisplay =     640,
+		.hsync_start =  656,
+		.hsync_end =    720,
+		.htotal =       840,
+		.vdisplay =     480,
+		.vsync_start =  481,
+		.vsync_end =    484,
+		.vtotal =       500,
+		.vrefresh = 78.571,
+	},
+
+// 720x400 69.290
+	{
+		.clock = 28000,
+		.hdisplay =     720,
+		.hsync_start =  738,
+		.hsync_end =    846,
+		.htotal =       900,
+		.vdisplay =     400,
+		.vsync_start =  412,
+		.vsync_end =    414,
+		.vtotal =       449,
+		.vrefresh = 69.290,
+	},
+
+// 720x480 59.94
+	{
+		.clock = 27000,
+		.hdisplay =     720,
+		.hsync_start =  736,
+		.hsync_end =    798,
+		.htotal =       858,
+		.vdisplay =     480,
+		.vsync_start =  489,
+		.vsync_end =    495,
+		.vtotal =       525,
+		.vrefresh = 59.94,
+	},
+
+// 720x576 51.852
+	{
+		.clock = 28000,
+		.hdisplay =     720,
+		.hsync_start =  732,
+		.hsync_end =    796,
+		.htotal =       864,
+		.vdisplay =     576,
+		.vsync_start =  581,
+		.vsync_end =    586,
+		.vtotal =       625,
+		.vrefresh = 51.852,
+	},
+
+// 800x600 59.375
+	{
+	.clock = 38000,
+		.hdisplay =     800,
+		.hsync_start =  824,
+		.hsync_end =    896,
+		.htotal =       1024,
+		.vdisplay =     600,
+		.vsync_start =  601,
+		.vsync_end =    603,
+		.vtotal =       625,
+		.vrefresh = 59.375,
+	},
+
+// 800x600 75.758
+	{
+		.clock = 50000,
+		.hdisplay =     800,
+		.hsync_start =  816,
+		.hsync_end =    896,
+		.htotal =       1056,
+		.vdisplay =     600,
+		.vsync_start =  601,
+		.vsync_end =    604,
+		.vtotal =       625,
+		.vrefresh = 75.758,
+	},
+
+// 832x624 75.483
+	{
+		.clock = 58000,
+		.hdisplay =     832,
+		.hsync_start =  864,
+		.hsync_end =    928,
+		.htotal =       1152,
+		.vdisplay =     624,
+		.vsync_start =  625,
+		.vsync_end =    628,
+		.vtotal =       667,
+		.vrefresh = 75.483,
+	},
+
+// 1024x768 60.004
+	{
+		.clock = 65000,
+		.hdisplay =     1024,
+		.hsync_start =  1048,
+		.hsync_end =    1184,
+		.htotal =       1344,
+		.vdisplay =     768,
+		.vsync_start =  771,
+		.vsync_end =    777,
+		.vtotal =       806,
+		.vrefresh = 60.004,
+	},
+
+// 1024x768 70.069
+	{
+		.clock = 75000,
+		.hdisplay =     1024,
+		.hsync_start =  1048,
+		.hsync_end =    1184,
+		.htotal =       1328,
+		.vdisplay =     768,
+		.vsync_start =  771,
+		.vsync_end =    777,
+		.vtotal =       806,
+		.vrefresh = 70.069,
+	},
+
+// 1024x768 75.267
+	{
+		.clock = 79000,
+		.hdisplay =     1024,
+		.hsync_start =  1040,
+		.hsync_end =    1136,
+		.htotal =       1312,
+		.vdisplay =     768,
+		.vsync_start =  769,
+		.vsync_end =    772,
+		.vtotal =       800,
+		.vrefresh = 75.267,
+	},
+
+// 1280x720 59.798
+	{
+		.clock = 74000,
+		.hdisplay =     1280,
+		.hsync_start =  1390,
+		.hsync_end =    1430,
+		.htotal =       1650,
+		.vdisplay =     720,
+		.vsync_start =  725,
+		.vsync_end =    730,
+		.vtotal =       750,
+		.vrefresh = 59.798,
+	},
+
+// 1280x720 49.832
+	{
+		.clock = 74000,
+		.hdisplay =     1280,
+		.hsync_start =  1720,
+		.hsync_end =    1760,
+		.htotal =       1980,
+		.vdisplay =     720,
+		.vsync_start =  725,
+		.vsync_end =    730,
+		.vtotal =       750,
+		.vrefresh = 49.832,
+	},
+
+// 1280x960 59.722
+	{
+		.clock = 107500,
+		.hdisplay =     1280,
+		.hsync_start =  1376,
+		.hsync_end =    1488,
+		.htotal =       1800,
+		.vdisplay =     960,
+		.vsync_start =  961,
+		.vsync_end =    964,
+		.vtotal =       1000,
+		.vrefresh = 59.722,
+	},
+
+// 1280x1024 59.464
+	{
+		.clock = 107000,
+		.hdisplay =     1280,
+		.hsync_start =  1328,
+		.hsync_end =    1440,
+		.htotal =       1688,
+		.vdisplay =     1024,
+		.vsync_start =  1025,
+		.vsync_end =    1028,
+		.vtotal =       1066,
+	.vrefresh = 59.464,
+	},
+
+// 1360x768 60.366
+	{
+		.clock = 86000,
+		.hdisplay =     1360,
+		.hsync_start =  1424,
+		.hsync_end =    1536,
+		.htotal =       1792,
+		.vdisplay =     768,
+		.vsync_start =  771,
+		.vsync_end =    777,
+		.vtotal =       795,
+		.vrefresh = 60.366,
+	},
+
+// 1440x900 59.606
+	{
+		.clock = 106000,
+		.hdisplay =     1440,
+		.hsync_start =  1520,
+		.hsync_end =    1672,
+		.htotal =       1904,
+		.vdisplay =     900,
+		.vsync_start =  903,
+		.vsync_end =    909,
+		.vtotal =       934,
+		.vrefresh = 59.606,
+	},
+
+// 1680x1050 66.411
+	{
+		.clock = 162000,
+		.hdisplay =     1680,
+		.hsync_start =  1784,
+		.hsync_end =    1960,
+		.htotal =       2240,
+		.vdisplay =     1050,
+		.vsync_start =  1053,
+		.vsync_end =    1059,
+		.vtotal =       1089,
+		.vrefresh = 66.411,
+	},
+
+// 1920x1080 54.882
+	{
+		.clock = 163000,
+		.hdisplay =     1920,
+		.hsync_start =  2448,
+		.hsync_end =    2492,
+		.htotal =       2640,
+		.vdisplay =     1080,
+		.vsync_start =  1084,
+		.vsync_end =    1089,
+		.vtotal =       1125,
+		.vrefresh = 54.882,
+	},
+
+// 1920x1080 65.455
+	{
+		.clock = 162000,
+		.hdisplay =     1920,
+		.hsync_start =  2008,
+		.hsync_end =    2052,
+		.htotal =       2200,
+		.vdisplay =     1080,
+		.vsync_start =  1084,
+		.vsync_end =    1089,
+		.vtotal =       1125,
+		.vrefresh = 65.455,
+	},
+};
+
+static const struct panel_desc kontron_dp = {
+	.modes = kontron_dp_modes,
+	.num_modes = ARRAY_SIZE(kontron_dp_modes),
+	.bpc = 8,
+	.size = {
+		.width = 520,
+		.height = 290,
+	},
+};
+
 static const struct display_timing kyo_tcg121xglp_timing = {
 	.pixelclock = { 52000000, 65000000, 71000000 },
 	.hactive = { 1024, 1024, 1024 },
@@ -3309,6 +3628,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "koe,tx31d200vm0baa",
 		.data = &koe_tx31d200vm0baa,
+	}, {
+		.compatible = "kontron,dp",
+		.data = &kontron_dp,
 	}, {
 		.compatible = "kyo,tcg121xglp",
 		.data = &kyo_tcg121xglp,
