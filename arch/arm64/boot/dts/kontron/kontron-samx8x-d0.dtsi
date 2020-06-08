@@ -1136,3 +1136,11 @@
 &jpegenc {
 	status = "okay";
 };
+
+&lsio_gpio4 {
+	pad-wakeup-num = <1>;
+	pad-wakeup = <
+		/* IMX8QXP_PCIE_CTRL0_WAKE_B, SC_PAD_WAKEUP_FALL_EDGE, LINE 2 */
+		2 5 2
+	>;
+};
