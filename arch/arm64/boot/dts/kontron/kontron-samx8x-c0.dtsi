@@ -1123,10 +1123,14 @@
 	status = "okay";
 };
 
+&lsio_gpio1 {
+	pad-wakeup-num = <1>;
+	/* IMX8QXP_ADC_IN5, SC_PAD_WAKEUP_FALL_EDGE, LINE 13 */
+	pad-wakeup = < 103 5 13 >;
+};
+
 &lsio_gpio4 {
 	pad-wakeup-num = <1>;
-	pad-wakeup = <
-		/* IMX8QXP_PCIE_CTRL0_WAKE_B, SC_PAD_WAKEUP_FALL_EDGE, LINE 2 */
-		2 5 2
-	>;
+	/* IMX8QXP_PCIE_CTRL0_WAKE_B, SC_PAD_WAKEUP_FALL_EDGE, LINE 2 */
+	pad-wakeup = < 2 5 2 >;
 };
