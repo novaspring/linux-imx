@@ -1,0 +1,115 @@
+SN65DSI84 DSI to LVDS bridge chip
+--------------------------------
+
+This is the binding for Texas Instruments SN65DSI84 bridge.
+http://www.ti.com/general/docs/lit/getliterature.tsp?genericPartNumber=sn65dsi84&fileType=pdf
+
+Required properties:
+- compatible: must be "ti,sn65dsi84"
+- reg: i2c address of the chip, 0x2d as per datasheet
+- enable-gpios: gpio specification for bridge_en pin (active high)
+
+- vccio-supply: A 1.8V supply that powers up the digital IOs.
+- vpll-supply: A 1.8V supply that powers up the displayport PLL.
+- vcca-supply: A 1.2V supply that powers up the analog circuits.
+- vcc-supply: A 1.2V supply that powers up the digital core.
+
+Optional properties:
+- interrupts-extended: specifier for the SN65DSI84 interrupt line.
+
+- sn-dsi-clk-divider: specifies DSI clock divider, defaults to 3 for 1 channel LVDS and 6 for 2 channel LVDS.
+- sn-dsi-lane-count: specifies number of dsi lanes, defaults to 4.
+- lvds-de-neg-polarity: boolean, sets LVDS DE negative polarity, defaul is positive.
+- lvds-channel-count: specifies LVDS channel count (1-2), default is 1.
+- lvds-set-24bpp-mode: boolean, sets 24bpp mode, default is 18bpp mode.
+- lvds-set-24bpp-format1: boolean, sets 24bpp data Format1, default is Format2.
+- lvds-cha-vocm: boolean, sets CHA_LVDS_VOCM bit.
+- lvds-chb-vocm: boolean, sets CHB_LVDS_VOCM bit.
+- lvds-cha-vod-swing: specifies value (0-3) for CHA_LVDS_VOD_SWING bits, default is 1.
+- lvds-chb-vod-swing: specifies value (0-3) for CHB_LVDS_VOD_SWING bits, default is 1.
+- lvds-even-odd-swap: boolean, sets EVEN_ODD_SWAP register.
+- lvds-cha-reverse: boolean, sets CHA_REVERSE_LVDS bit.
+- lvds-chb-reverse: boolean, sets CHB_REVERSE_LVDS bit.
+- lvds-cha-term: boolean, sets CHA_LVDS_TERM bit.
+- lvds-chb-term: boolean, sets CHB_LVDS_TERM bit.
+- lvds-cha-cm-adjust: specifies value (0-3) for CHA_LVDS_CM_ADJUST bits, default is 0.
+- lvds-chb-cm-adjust: specifies value (0-3) for CHB_LVDS_CM_ADJUST bits, default is 0.
+- sn-sync-delay: specifies value for CHA_SYNC_DELAY, default is 32.
+- dsi-burst-mode: boolean, sets burst video mode to dsi mode flags, continuous otherwise.
+
+Required nodes:
+This device has two video ports. Their connections are modeled using the
+OF graph bindings specified in Documentation/devicetree/bindings/graph.txt.
+
+- Video port 0 for DSI input
+- Video port 1 for LVDS output
+
+Example
+-------
+
+&i2c0_mipi_lvds0 {
+
+	lvds-bridge@2d {
+		compatible = "ti,sn65dsi84";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x2d>;
+
+		/* TODO: enable this when panel bind is solved */
+		enable-gpios = <&gpio1 01 GPIO_ACTIVE_HIGH>;
+
+		interrupts-extended = <&gpio2 0 IRQ_TYPE_EDGE_FALLING>;
+
+		vccio-supply = <&reg_1v8_s0>;
+		vcca-supply = <&reg_1v2_s0>;
+		vpll-supply = <&reg_1v8_s0>;
+		vcc-supply = <&reg_1v2_s0>;
+
+		sn-dsi-clk-divider = <3>;
+		sn-dsi-lane-count = <4>;
+//		lvds-de-neg-polarity;
+		lvds-channel-count = <1>;
+		lvds-set-24bpp-mode;
+//		lvds-set-24bpp-format1;
+//		lvds-cha-vocm;
+//		lvds-chb-vocm;
+		lvds-cha-vod-swing = <3>;
+		lvds-chb-vod-swing = <3>;
+//		lvds-even-odd-swap;
+//		lvds-cha-reverse;
+//		lvds-chb-reverse;
+//		lvds-cha-term;
+//		lvds-chb-term;
+		lvds-cha-cm-adjust = <0>;
+		lvds-chb-cm-adjust = <0>;
+//		sn-sync-delay = <39>;
+		dsi-burst-mode;
+
+		i2c-bus {
+			#address-cells = <1>;
+			#size-cells = <0>;
+		};
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+
+				lvds_bridge_in: endpoint {
+					remote-endpoint = <&mipi_dsi_bridge1_out>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+
+				lvds_bridge_out: endpoint {
+					remote-endpoint = <&lvds_panel_in>;
+				};
+			};
+		};
+	};
+
+};
