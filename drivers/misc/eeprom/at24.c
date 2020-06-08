@@ -114,10 +114,11 @@ MODULE_PARM_DESC(at24_io_limit, "Maximum bytes per I/O (default 128)");
 /*
  * Specs often allow 5 msec for a page write, sometimes 20 msec;
  * it's important to recover from write timeouts.
+ * Increased by 10 to workaround EEPROM programming issue on some modules.
  */
-static unsigned int at24_write_timeout = 25;
+static unsigned int at24_write_timeout = 35;
 module_param_named(write_timeout, at24_write_timeout, uint, 0);
-MODULE_PARM_DESC(at24_write_timeout, "Time (in ms) to try writes (default 25)");
+MODULE_PARM_DESC(at24_write_timeout, "Time (in ms) to try writes (default 35)");
 
 struct at24_chip_data {
 	u32 byte_len;
