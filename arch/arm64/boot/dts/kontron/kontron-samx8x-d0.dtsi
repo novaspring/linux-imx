@@ -183,8 +183,8 @@
 	};
 
 	lvds: display@0 {
-//		compatible = "auo,g215hvn01_0";
-		compatible = "lg,ld101wx1-sl01";
+		compatible = "auo,g215hvn01_0";
+//		compatible = "lg,ld101wx1-sl01";
 		label = "lvds";
 		power-supply = <&reg_bpl_v_3v3_s0>;
 
@@ -1048,8 +1048,8 @@
 //		sn-dsi-clock-divider = <6>;
 //		sn-dsi-lane-count = <4>;
 //		lvds-de-neg-polarity;
-//		lvds-channel-count = <2>;
-		lvds-channel-count = <1>;
+		lvds-channel-count = <2>;
+//		lvds-channel-count = <1>;
 		lvds-set-24bpp-mode;
 //		lvds-set-24bpp-format1;
 //		lvds-cha-vocm;
