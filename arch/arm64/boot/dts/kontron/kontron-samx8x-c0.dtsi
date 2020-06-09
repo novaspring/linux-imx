@@ -862,7 +862,6 @@
 };
 
 &pcieb {
-	bus-range = <0 0x01>;
 	ext_osc = <1>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcieb>;
