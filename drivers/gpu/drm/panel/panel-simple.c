@@ -888,6 +888,30 @@ static const struct panel_desc auo_g185han01 = {
 	.bus_format = MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,
 };
 
+static const struct drm_display_mode auo_g215hvn01_0_mode = {
+	.clock = 144000,
+	.hdisplay = 1920,
+	.vdisplay = 1080,
+	.hsync_start = (960 + 33)*2,
+	.hsync_end = (960 + 33 + 26)*2,
+	.htotal = (960 + 33 + 26 + 33)*2,
+	.vsync_start = 1080 + 10,
+	.vsync_end = 1080 + 10 + 10,
+	.vtotal = 1080 + 50,
+	.vrefresh = 60,
+	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC,
+};
+
+static const struct panel_desc auo_g215hvn01_0 = {
+	.modes = &auo_g215hvn01_0_mode,
+	.num_modes = 1,
+	.bpc = 8,
+	.size = {
+		.width = 476,
+		.height = 268,
+	},
+};
+
 static const struct display_timing auo_p320hvn03_timings = {
 	.pixelclock = { 106000000, 148500000, 164000000 },
 	.hactive = { 1920, 1920, 1920 },
@@ -3499,6 +3523,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "auo,g185han01",
 		.data = &auo_g185han01,
+	}, {
+		.compatible = "auo,g215hvn01_0",
+		.data = &auo_g215hvn01_0,
 	}, {
 		.compatible = "auo,p320hvn03",
 		.data = &auo_p320hvn03,
