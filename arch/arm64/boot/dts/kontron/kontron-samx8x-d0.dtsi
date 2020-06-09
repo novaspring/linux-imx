@@ -31,6 +31,48 @@
 		};
 	};
 
+	aliases {
+		csi0 = &mipi_csi_0;
+		dpu0 = &dpu1;
+		ethernet0 = &fec1;
+		ethernet1 = &fec2;
+		dsi_phy0 = &mipi0_dphy;
+		dsi_phy1 = &mipi1_dphy;
+		mipi_dsi0 = &mipi0_dsi_host;
+		mipi_dsi1 = &mipi1_dsi_host;
+		ldb0 = &ldb1;
+		ldb1 = &ldb2;
+		isi0 = &isi_0;
+		isi1 = &isi_1;
+		isi2 = &isi_2;
+		isi3 = &isi_3;
+		isi4 = &isi_4;
+		isi5 = &isi_5;
+		isi6 = &isi_6;
+		isi7 = &isi_7;
+		serial0 = &lpuart0;
+		serial1 = &lpuart1;
+		serial2 = &lpuart2;
+		serial3 = &lpuart3;
+		mmc0 = &usdhc1;
+		mmc1 = &usdhc2;
+		can0 = &flexcan1;
+		can1 = &flexcan2;
+		i2c0 = &i2c0;    /* i2c_pm */
+		i2c1 = &i2c1;    /* i2c_int*/
+		i2c2 = &i2c3;    /* i2c_gp */
+		i2c3 = &i2c_mipi_csi0;
+		i2c4 = &i2c0_mipi_lvds0;
+		i2c5 = &i2c0_mipi_lvds1;
+		gpio0 = &lsio_gpio0;
+		gpio1 = &lsio_gpio1;
+		gpio2 = &lsio_gpio2;
+		gpio3 = &lsio_gpio3;
+		gpio4 = &lsio_gpio4;
+		gpio5 = &lsio_gpio5;
+		gpio6 = &lsio_gpio6;
+		gpio7 = &lsio_gpio7;
+	};
 
 	memory@80000000 {
 		device_type = "memory";
@@ -1140,11 +1182,11 @@
 &lsio_gpio1 {
 	pad-wakeup-num = <1>;
 	/* IMX8QXP_ADC_IN5, SC_PAD_WAKEUP_FALL_EDGE, LINE 13 */
-	pad-wakeup = < 103 5 13>;
+	pad-wakeup = < 103 5 13 >;
 };
 
 &lsio_gpio4 {
 	pad-wakeup-num = <1>;
 	/* IMX8QXP_PCIE_CTRL0_WAKE_B, SC_PAD_WAKEUP_FALL_EDGE, LINE 2 */
-	pad-wakeup = < 2 5 2>;
+	pad-wakeup = < 2 5 2 >;
 };
