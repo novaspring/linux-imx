@@ -289,8 +289,8 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_charger>;
 		gpios = <&lsio_gpio3 0 GPIO_ACTIVE_LOW>;
-		charging-gpio = <&lsio_gpio3 1 GPIO_ACTIVE_LOW>;
-		bat-low-gpio = <&lsio_gpio1 12 GPIO_ACTIVE_LOW>;
+		charge-status-gpios = <&lsio_gpio3 1 GPIO_ACTIVE_LOW>;
+		capacity-level-gpios = <&lsio_gpio1 12 GPIO_ACTIVE_LOW>;
 	};
 };
 

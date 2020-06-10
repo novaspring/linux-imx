@@ -297,8 +297,8 @@
 		compatible = "gpio-charger";
 		charger-type = "battery";
 		gpios = <&tca9539 10 GPIO_ACTIVE_LOW>;
-		charging-gpio = <&tca9539 14 GPIO_ACTIVE_LOW>;
-		bat-low-gpio = <&tca9539 11 GPIO_ACTIVE_LOW>;
+		charge-status-gpios = <&tca9539 14 GPIO_ACTIVE_LOW>;
+		capacity-level-gpios = <&tca9539 11 GPIO_ACTIVE_LOW>;
 	};
 };
 
