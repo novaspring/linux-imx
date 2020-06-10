@@ -16,6 +16,7 @@ Required properties :
 
 Optional properties:
  - charge-status-gpios: GPIO indicating whether a battery is charging.
+ - capacity-level-gpios: GPIO indicating whether a battery is lonw on capacity.
 
 Example:
 
@@ -24,6 +25,7 @@ Example:
 		charger-type = "usb-sdp";
 		gpios = <&gpd 28 GPIO_ACTIVE_LOW>;
 		charge-status-gpios = <&gpc 27 GPIO_ACTIVE_LOW>;
+		capacity-level-gpios = <&gpc 26 GPIO_ACTIVE_LOW>;
 	};
 
 	battery {
