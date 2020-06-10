@@ -739,7 +739,22 @@ static struct platform_driver pwm_backlight_driver = {
 	.shutdown	= pwm_backlight_shutdown,
 };
 
-module_platform_driver(pwm_backlight_driver);
+//module_platform_driver(pwm_backlight_driver);
+static int __init pwm_backlight_init(void)
+{
+	int ret;
+
+	ret = platform_driver_register(&pwm_backlight_driver);
+	return ret;
+}
+
+static void __exit  pwm_backlight_exit(void)
+{
+	platform_driver_unregister(&pwm_backlight_driver);
+}
+
+late_initcall(pwm_backlight_init);
+module_exit(pwm_backlight_exit);
 
 MODULE_DESCRIPTION("PWM based Backlight Driver");
 MODULE_LICENSE("GPL v2");
