@@ -120,6 +120,10 @@ static int imx_scu_soc_probe(struct platform_device *pdev)
 		soc_dev_attr->soc_id = "i.MX8QXP";
 	else if (of_machine_is_compatible("fsl,imx8dxl"))
 		soc_dev_attr->soc_id = "i.MX8DXL";
+	else if (of_machine_is_compatible("fsl,imx8dx"))
+		soc_dev_attr->soc_id = "i.MX8DX";
+	else if (of_machine_is_compatible("fsl,imx8dxp"))
+		soc_dev_attr->soc_id = "i.MX8DXP";
 
 	/* format revision value passed from SCU firmware */
 	val = (id >> 5) & 0xf;
