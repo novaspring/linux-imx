@@ -1,13 +1,44 @@
 /dts-v1/;
 
-#include "../freescale/imx8qxp.dtsi"
-#include "kontron-samx8x-c0.dtsi"
-#include "smarc-evaluation-carrier-v2.dtsi"
-#include "ov5640.dtsi"
-
-#include <dt-bindings/input/input.h>
+#include "kontron-samx8x-dx.dts"
 
 / {
 	model = "Kontron SMARC-sAMX8X DualX";
 	compatible = "kontron,samx8x-dx", "fsl,imx8dx";
+
+	gpio-input {
+		/delete-property/ pinctrl-names;
+		/delete-property/ pinctrl-0;
+		/delete-node/ sleep;
+	};
+
+	gpio-charger0 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_charger>;
+		gpios = <&lsio_gpio3 0 GPIO_ACTIVE_LOW>;
+		charge-status-gpios = <&lsio_gpio3 1 GPIO_ACTIVE_LOW>;
+		capacity-level-gpios = <&lsio_gpio1 12 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&iomuxc {
+	samx8x {
+		pinctrl_charger: chargergrp {
+			fsl,pins = <
+				IMX8QXP_CSI_PCLK_LSIO_GPIO3_IO00	0x21
+				IMX8QXP_CSI_MCLK_LSIO_GPIO3_IO01	0x21
+				IMX8QXP_ADC_IN2_LSIO_GPIO1_IO12		0x21
+			>;
+		};
+	};
+};
+
+&tca9539 {
+	gpio-line-names =
+		"GPIO0_CAM0_PWR_N", "GPIO1_CAM1_PWR_N",
+		"GPIO2_CAM0_RST_N", "GPIO3_CAM1_RST_N",
+		"GPIO4_HDA_RST_N", "GPIO5_PWM_OUT",
+		"GPIO6_TACHIN", "GPIO7", "GPIO8",
+		"GPIO9", "GPIO10", "GPIO11",
+		"LID", "", "", "";
 };
