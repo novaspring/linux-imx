@@ -1,7 +1,7 @@
 /dts-v1/;
 
 #include "../freescale/imx8qxp.dtsi"
-#include "kontron-samx8x-d0.dtsi"
+#include "kontron-samx8x.dtsi"
 #include "smarc-evaluation-carrier-v2.dtsi"
 #include "ov5640.dtsi"
 

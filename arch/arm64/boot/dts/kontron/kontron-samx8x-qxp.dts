@@ -1,11 +1,6 @@
 /dts-v1/;
 
-#include "../freescale/imx8qxp.dtsi"
-#include "kontron-samx8x-d0.dtsi"
-#include "smarc-evaluation-carrier-v2.dtsi"
-#include "ov5640.dtsi"
-
-#include <dt-bindings/input/input.h>
+#include "kontron-samx8x-dx.dts"
 
 / {
 	model = "Kontron SMARC-sAMX8X QuadXPlus";
