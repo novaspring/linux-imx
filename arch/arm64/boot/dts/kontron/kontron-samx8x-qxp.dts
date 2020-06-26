@@ -1,5 +1,7 @@
 /dts-v1/;
 
+#define KEEP_CPUS
+
 #include "kontron-samx8x-dx.dts"
 
 / {
