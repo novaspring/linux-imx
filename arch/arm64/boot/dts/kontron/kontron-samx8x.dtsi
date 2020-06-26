@@ -220,7 +220,7 @@
 			gpios = <&lsio_gpio3 1 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_SLEEP>;
 			debounce-interval = <1>;
-			gpio-key,wakeup;
+//			gpio-key,wakeup;
 		};
 	};
 
