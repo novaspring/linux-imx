@@ -154,7 +154,7 @@
 
 /*
 &i2c0 {
-	hdmi-bridge@39 {
+	hdmi_bridge: hdmi-bridge@39 {
 		status = "okay";
 		compatible = "sil,sii9022";
 		reg = <0x39>;

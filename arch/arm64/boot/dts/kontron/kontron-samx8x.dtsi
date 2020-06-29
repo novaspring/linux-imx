@@ -1070,7 +1070,7 @@
 	clklo = <30>;
 	status = "okay";
 
-	lvds-bridge@2d {
+	lvds_bridge: lvds-bridge@2d {
 		compatible = "ti,sn65dsi84";
 		#address-cells = <1>;
 		#size-cells = <0>;
