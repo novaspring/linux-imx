@@ -1956,7 +1956,7 @@ static const struct panel_desc koe_tx31d200vm0baa = {
 };
 
 static const struct drm_display_mode kontron_dp_mode = {
-	.clock = 162000,
+	.clock = 148500,
 	.hdisplay = 1920,
 	.hsync_start = 1920 + 88,
 	.hsync_end = 1920 + 88 + 44,
