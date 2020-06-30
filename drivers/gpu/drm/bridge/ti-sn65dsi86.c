@@ -267,7 +267,7 @@ static int ti_sn_bridge_parse_regulators(struct ti_sn_bridge *pdata)
 
 static int ti_sn_bridge_attach(struct drm_bridge *bridge)
 {
-	int ret, val;
+	int ret;
 	struct ti_sn_bridge *pdata = bridge_to_ti_sn_bridge(bridge);
 	struct mipi_dsi_host *host;
 	struct mipi_dsi_device *dsi;
@@ -317,13 +317,6 @@ static int ti_sn_bridge_attach(struct drm_bridge *bridge)
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO;
-
-	/* check if continuous dsi clock is required or not */
-	pm_runtime_get_sync(pdata->dev);
-	regmap_read(pdata->regmap, SN_DPPLL_SRC_REG, &val);
-	pm_runtime_put(pdata->dev);
-	if (!(val & DPPLL_CLK_SRC_DSICLK))
-		dsi->mode_flags |= MIPI_DSI_CLOCK_NON_CONTINUOUS;
 
 	ret = mipi_dsi_attach(dsi);
 	if (ret < 0) {
