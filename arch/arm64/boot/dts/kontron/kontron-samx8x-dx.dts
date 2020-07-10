@@ -10,4 +10,19 @@
 / {
 	model = "Kontron SMARC-sAMX8X DualX";
 	compatible = "kontron,samx8x-dx", "fsl,imx8dx";
+
+/*
+ *  DX module has only 1 GB memory. Reducing CMA to 352M which seems to be
+ *  enough for the video playback.
+ */
+	reserved-memory {
+		/* global autoconfigured region for contiguous allocations */
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0 0x16000000>;
+			alloc-ranges = <0 0x96000000 0 0x16000000>;
+			linux,cma-default;
+		};
+	};
 };

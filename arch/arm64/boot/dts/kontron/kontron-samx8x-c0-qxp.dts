@@ -59,16 +59,16 @@
 	};
 */
 
-//	reserved-memory {
+	reserved-memory {
 		/* global autoconfigured region for contiguous allocations */
-//		linux,cma {
-//			compatible = "shared-dma-pool";
-//			reusable;
-//			size = <0 0x3c000000>;
-//			alloc-ranges = <0 0x96000000 0 0x3c000000>;
-//			linux,cma-default;
-//		};
-//	};
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0 0x3c000000>;
+			alloc-ranges = <0 0x96000000 0 0x3c000000>;
+			linux,cma-default;
+		};
+	};
 };
 
 /* DSI/LVDS port 1 */
