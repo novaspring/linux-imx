@@ -42,3 +42,11 @@
 		"GPIO9", "GPIO10", "GPIO11",
 		"LID", "", "", "";
 };
+
+&lsio_gpio1 {
+	/delete-property/ gpio-line-names;
+};
+
+&lsio_gpio3 {
+	/delete-property/ gpio-line-names;
+};
