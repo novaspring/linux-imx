@@ -63,12 +63,14 @@ static int imx_sc_wdt_start(struct watchdog_device *wdog)
 
 	arm_smccc_smc(IMX_SIP_TIMER, IMX_SIP_TIMER_START_WDOG,
 		      0, 0, 0, 0, 0, 0, &res);
+/* watchdog action type is set in u-boot.
 	if (res.a0)
 		return -EACCES;
 
 	arm_smccc_smc(IMX_SIP_TIMER, IMX_SIP_TIMER_SET_WDOG_ACT,
 		      SC_TIMER_WDOG_ACTION_PARTITION,
 		      0, 0, 0, 0, 0, &res);
+*/
 	return res.a0 ? -EACCES : 0;
 }
 
