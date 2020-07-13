@@ -82,7 +82,7 @@
 	clklo = <30>;
 	status = "okay";
 
-	edp-bridge@2d {
+	edp_bridge: edp-bridge@2d {
 		compatible = "ti,sn65dsi86";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -154,7 +154,7 @@
 
 /*
 &i2c0 {
-	hdmi-bridge@39 {
+	hdmi_bridge: hdmi-bridge@39 {
 		status = "okay";
 		compatible = "sil,sii9022";
 		reg = <0x39>;
