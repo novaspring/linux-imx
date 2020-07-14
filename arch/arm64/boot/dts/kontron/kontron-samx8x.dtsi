@@ -409,6 +409,7 @@
 				IMX8QXP_MIPI_DSI0_I2C0_SCL_MIPI_DSI0_I2C0_SCL	0xc6000020
 				IMX8QXP_MIPI_DSI0_I2C0_SDA_MIPI_DSI0_I2C0_SDA	0xc6000020
 				IMX8QXP_SPI2_SDO_LSIO_GPIO1_IO01		0x00000041
+				IMX8QXP_MIPI_DSI0_GPIO0_01_LSIO_GPIO1_IO28	0x00000061
 			>;
 		};
 
@@ -1070,7 +1071,7 @@
 		/* TODO: enable this when panel bind is solved */
 		enable-gpios = <&lsio_gpio1 01 GPIO_ACTIVE_HIGH>;
 
-		interrupts-extended = <&lsio_gpio2 0 IRQ_TYPE_EDGE_FALLING>;
+		interrupts-extended = <&lsio_gpio1 28 IRQ_TYPE_EDGE_FALLING>;
 
 		vccio-supply = <&reg_1v8_s0>;
 		vcca-supply = <&reg_1v2_s0>;
