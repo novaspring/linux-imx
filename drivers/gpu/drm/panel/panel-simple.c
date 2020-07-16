@@ -1955,19 +1955,6 @@ static const struct panel_desc koe_tx31d200vm0baa = {
 	.bus_format = MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,
 };
 
-static const struct drm_display_mode kontron_dp_mode = {
-	.clock = 148500,
-	.hdisplay = 1920,
-	.hsync_start = 1920 + 88,
-	.hsync_end = 1920 + 88 + 44,
-	.htotal = 1920 + 88 + 44 + 148,
-	.vdisplay = 1080,
-	.vsync_start = 1080 + 4,
-	.vsync_end = 1080 + 4 + 5,
-	.vtotal = 1080 + 4 + 5 + 36,
-	.vrefresh = 65.5,
-};
-
 static const struct drm_display_mode kontron_dp_modes[] = {
 // 640x480 57.143
 	{
@@ -2251,7 +2238,7 @@ static const struct drm_display_mode kontron_dp_modes[] = {
 
 // 1920x1080 65.455
 	{
-		.clock = 162000,
+		.clock = 148500,
 		.hdisplay =     1920,
 		.hsync_start =  2008,
 		.hsync_end =    2052,
@@ -2260,7 +2247,7 @@ static const struct drm_display_mode kontron_dp_modes[] = {
 		.vsync_start =  1084,
 		.vsync_end =    1089,
 		.vtotal =       1125,
-		.vrefresh = 65.455,
+		.vrefresh = 60,
 	},
 };
 
