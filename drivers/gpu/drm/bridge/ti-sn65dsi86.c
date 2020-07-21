@@ -70,6 +70,8 @@
 #define SN_DATARATE_CONFIG_REG			0x94
 #define  DP_DATARATE_MASK			GENMASK(7, 5)
 #define  DP_DATARATE(x)				((x) << 5)
+#define SN_CSR_LINK_TRAINING		0x95
+#define  ADJUST_REQUEST_DISABLE		BIT(0)
 #define SN_ML_TX_MODE_REG			0x96
 #define  ML_TX_MAIN_LINK_OFF			0
 #define  ML_TX_NORMAL_MODE			BIT(0)
@@ -702,6 +704,10 @@ static void ti_sn_bridge_enable(struct drm_bridge *bridge)
 	regmap_update_bits(pdata->regmap, SN_DSI_LANES_REG,
 			   CHA_DSI_LANES_MASK, val);
 
+	/* Disable adjust request during link training */
+	regmap_update_bits(pdata->regmap, SN_CSR_LINK_TRAINING,
+			ADJUST_REQUEST_DISABLE, 1);
+
 	/* Enable maximum output swing */
 	regmap_write(pdata->regmap, SN_V0_EN_REG, 0xFF);
 	regmap_write(pdata->regmap, SN_V1_EN_REG, 0xFF);
@@ -900,13 +906,15 @@ static irqreturn_t ti_sn_bridge_irq(int irq, void *data)
 		drm_helper_hpd_irq_event(pdata->bridge.dev);
 
 	if (status & HPD_IRQ_STATUS) {
+		/* Retrain link on every HPD_IRQ
 		drm_dp_dpcd_read_link_status(&pdata->aux, link_status);
 		if (!drm_dp_channel_eq_ok(link_status, pdata->dp_lanes)) {
 			DRM_DEBUG_DRIVER("link EQ not ok, retraining.\n");
-			/* Disable DP PLL before link retrain */
-			regmap_write(pdata->regmap, SN_PLL_ENABLE_REG, 0);
-			ti_sn_link_training(pdata, pdata->dp_rate_idx, &last_err_str);
 		}
+		*/
+		// Disable DP PLL before link retrain
+		regmap_write(pdata->regmap, SN_PLL_ENABLE_REG, 0);
+		ti_sn_link_training(pdata, pdata->dp_rate_idx, &last_err_str);
     }
 
 	return IRQ_HANDLED;
