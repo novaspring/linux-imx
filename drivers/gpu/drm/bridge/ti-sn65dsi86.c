@@ -675,6 +675,21 @@ static unsigned int ti_sn_get_max_lanes(struct ti_sn_bridge *pdata)
 	return data & DP_LANE_COUNT_MASK;
 }
 
+static unsigned int ti_sn_get_enhanced_frame(struct ti_sn_bridge *pdata)
+{
+	u8 data;
+	int ret;
+
+	ret = drm_dp_dpcd_readb(&pdata->aux, DP_MAX_LANE_COUNT, &data);
+	if (ret != 1) {
+		DRM_DEV_ERROR(pdata->dev,
+				"Can't read enhanced frame capacity (%d); assuming 0\n", ret);
+		return 0;
+	}
+
+	return data & DP_ENHANCED_FRAME_CAP;
+}
+
 static int ti_sn_link_training(struct ti_sn_bridge *pdata, int dp_rate_idx,
 			       const char **last_err_str)
 {
@@ -746,8 +761,9 @@ static void ti_sn_bridge_enable(struct drm_bridge *bridge)
 	regmap_write(pdata->regmap, SN_ASSR_OVRR_REG, 0x01);
 	regmap_write(pdata->regmap, SN_PAGE_REG, 0x00);
 	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, 0x03, 0x00);
-	/* Also disable Enhanced Framing */
-	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, 0x04, 0x00);
+	/* Also disable Enhanced Framing if not supported */
+	if (!ti_sn_get_enhanced_frame(pdata))
+		regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, 0x04, 0x00);
 	regmap_write(pdata->regmap, SN_LN_ASSIGN_REG, pdata->ln_assign);
 	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, LN_POLRS_MASK,
 			   pdata->ln_polrs << LN_POLRS_OFFSET);
