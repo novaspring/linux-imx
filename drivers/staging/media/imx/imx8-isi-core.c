@@ -17,6 +17,15 @@ static const struct soc_device_attribute imx8_soc[] = {
 		.soc_id   = "i.MX8QXP",
 		.revision = "1.2",
 	}, {
+		.soc_id   = "i.MX8DX",
+		.revision = "1.0",
+	}, {
+		.soc_id   = "i.MX8DX",
+		.revision = "1.1",
+	}, {
+		.soc_id   = "i.MX8DX",
+		.revision = "1.2",
+	}, {
 		.soc_id   = "i.MX8QM",
 		.revision = "1.0",
 	}, {
