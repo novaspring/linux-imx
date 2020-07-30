@@ -962,7 +962,6 @@
 	status = "okay";
 };
 
-/*
 &isi_0 {
 	status = "okay";
 
@@ -999,15 +998,6 @@
 	};
 };
 
-&isi_4 {
-	interface = <6 0 2>;
-	status = "okay";
-
-	cap_device {
-		status = "okay";
-	};
-};
-*/
 &vpu_decoder {
 	boot-region = <&decoder_boot>;
 	rpc-region = <&decoder_rpc>;
