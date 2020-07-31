@@ -182,8 +182,10 @@ static bool fsl_lpspi_can_dma(struct spi_controller *controller,
 {
 	unsigned int bytes_per_word;
 
-	if (!controller->dma_rx)
+	if (!controller->dma_rx) {
+		BUG();
 		return false;
+	}
 
 	bytes_per_word = fsl_lpspi_bytes_per_word(transfer->bits_per_word);
 
@@ -194,6 +196,7 @@ static bool fsl_lpspi_can_dma(struct spi_controller *controller,
 		case 4:
 			break;
 		default:
+			BUG();
 			return false;
 	}
 
@@ -919,6 +922,12 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
 	}
 	fsl_lpspi->base_phys = res->start;
 
+	/* On i.MX8QXP some interrupts will fire despite IER being 0. Since we
+	 * require DMA anyway (fsl_lpspi_dma_init() must not fail, see below),
+	 * let's comment the interrupt initialization for now in order to
+	 * prevent inordinate number of IRQs and possibly broken state caused by
+	 * DMA and IRQ based execution running at the same time. */
+	/*
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		ret = irq;
@@ -931,6 +940,7 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "can't get irq%d: %d\n", irq, ret);
 		goto out_controller_put;
 	}
+	*/
 
 	fsl_lpspi->clk_per = devm_clk_get(&pdev->dev, "per");
 	if (IS_ERR(fsl_lpspi->clk_per)) {
