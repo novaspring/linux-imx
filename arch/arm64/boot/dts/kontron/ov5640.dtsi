@@ -18,12 +18,12 @@
 	status = "okay";
 
 	ov5640_mipi: ov5640_mipi@3c {
-		compatible = "ovti,ov5640_mipi_v3";
+		compatible = "ovti,ov5640";
 		reg = <0x3c>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_mipi_csi0>;
-		clocks = <&clk_dummy>;
-		clock-names = "csi_mclk";
+		clocks = <&xtal24m>;
+		clock-names = "xclk";
 		csi_id = <0>;
 		pwn-gpios = <&tca9539 0 GPIO_ACTIVE_LOW>;
 		rst-gpios = <&tca9539 2 GPIO_ACTIVE_HIGH>;
@@ -34,6 +34,8 @@
 		port {
 			ov5640_mipi_ep: endpoint {
 				remote-endpoint = <&mipi_csi0_ep>;
+				data-lanes = <1 2>;
+				clocks-lanes = <0>;
 			};
 		};
 	};
