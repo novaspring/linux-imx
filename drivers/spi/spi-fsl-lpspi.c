@@ -845,6 +845,9 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
 	u32 temp;
 	bool is_slave;
 
+	(void) irq;
+	(void) fsl_lpspi_isr;
+
 	if (!np && !lpspi_platform_info) {
 		dev_err(&pdev->dev, "can't get the platform data\n");
 		return -EINVAL;
