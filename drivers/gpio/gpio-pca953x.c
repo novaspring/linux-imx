@@ -808,7 +808,8 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
 	irq_chip->name = dev_name(&chip->client->dev);
 	irq_chip->irq_mask = pca953x_irq_mask;
 	irq_chip->irq_unmask = pca953x_irq_unmask;
-	irq_chip->irq_set_wake = pca953x_irq_set_wake;
+	/* kontron-samx8x: Disabled irq_set_wake because of resume crash */
+	(void) pca953x_irq_set_wake; //irq_chip->irq_set_wake = pca953x_irq_set_wake;
 	irq_chip->irq_bus_lock = pca953x_irq_bus_lock;
 	irq_chip->irq_bus_sync_unlock = pca953x_irq_bus_sync_unlock;
 	irq_chip->irq_set_type = pca953x_irq_set_type;
