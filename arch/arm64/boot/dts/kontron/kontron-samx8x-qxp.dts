@@ -126,8 +126,8 @@
 				reg = <1>;
 
 				edp_bridge_out: endpoint {
-					data-lanes = <0 1 2 3>;
-					lane-polarities = <0 0 0 0>;
+					data-lanes = <0 1>;
+					lane-polarities = <0 0>;
 					remote-endpoint = <&edp_panel_in>;
 				};
 			};
