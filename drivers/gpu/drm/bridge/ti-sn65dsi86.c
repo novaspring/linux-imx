@@ -484,14 +484,17 @@ static void ti_sn_bridge_set_refclk_freq(struct ti_sn_bridge *pdata)
 static void ti_sn_bridge_set_dsi_rate(struct ti_sn_bridge *pdata)
 {
 	unsigned int bit_rate_mhz, clk_freq_mhz;
+	unsigned int bit_rate_khz, clk_freq_khz;
 	unsigned int val;
 	struct drm_display_mode *mode =
 		&pdata->bridge.encoder->crtc->state->adjusted_mode;
 
 	/* set DSIA clk frequency */
-	bit_rate_mhz = (mode->clock / 1000) *
+	bit_rate_khz = mode->clock *
 			mipi_dsi_pixel_format_to_bpp(pdata->dsi->format);
-	clk_freq_mhz = bit_rate_mhz / (pdata->dsi->lanes * 2);
+	clk_freq_khz = bit_rate_khz / (pdata->dsi->lanes * 2);
+	bit_rate_mhz = bit_rate_khz / 1000;
+	clk_freq_mhz = clk_freq_khz / 1000;
 
 	/* for each increment in val, frequency increases by 5MHz */
 	val = (MIN_DSI_CLK_FREQ_MHZ / 5) +
