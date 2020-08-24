@@ -735,10 +735,6 @@ static void ti_sn_bridge_enable(struct drm_bridge *bridge)
 	regmap_update_bits(pdata->regmap, SN_DSI_LANES_REG,
 			   CHA_DSI_LANES_MASK, val);
 
-	/* Disable adjust request during link training */
-	regmap_update_bits(pdata->regmap, SN_CSR_LINK_TRAINING,
-			ADJUST_REQUEST_DISABLE, 1);
-
 	/* Enable maximum output swing */
 	regmap_write(pdata->regmap, SN_V0_EN_REG, 0xFF);
 	regmap_write(pdata->regmap, SN_V1_EN_REG, 0xFF);
