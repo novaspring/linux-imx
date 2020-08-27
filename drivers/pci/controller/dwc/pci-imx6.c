@@ -1026,6 +1026,31 @@ static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
 	}
 }
 
+static void imx6_pcie_reset_dwc_pcie(struct imx6_pcie *imx6_pcie)
+{
+	u32 val;
+
+	if (imx6_pcie->drvdata->variant != IMX8QXP)
+		return;
+
+	/* Will be called again imx6_pcie_assert_core_reset() */
+	imx6_pcie_clk_enable(imx6_pcie);
+
+	val = IMX8QM_CSR_PCIEB_OFFSET;
+	regmap_update_bits(imx6_pcie->iomuxc_gpr,
+			   val + IMX8QM_CSR_PCIE_CTRL2_OFFSET,
+			   IMX8QM_CTRL_BUTTON_RST_N,
+			   0);
+	regmap_update_bits(imx6_pcie->iomuxc_gpr,
+			   val + IMX8QM_CSR_PCIE_CTRL2_OFFSET,
+			   IMX8QM_CTRL_PERST_N,
+			   0);
+	regmap_update_bits(imx6_pcie->iomuxc_gpr,
+			   val + IMX8QM_CSR_PCIE_CTRL2_OFFSET,
+			   IMX8QM_CTRL_POWER_UP_RST_N,
+			   0);
+}
+
 static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
 {
 	u32 val;
@@ -2349,6 +2374,7 @@ static int imx6_pcie_resume_noirq(struct device *dev)
 		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR1,
 				IMX6Q_GPR1_PCIE_TEST_PD, 0);
 	} else {
+		imx6_pcie_reset_dwc_pcie(imx6_pcie);
 		imx6_pcie_assert_core_reset(imx6_pcie);
 		imx6_pcie_init_phy(imx6_pcie);
 		imx6_pcie_deassert_core_reset(imx6_pcie);
