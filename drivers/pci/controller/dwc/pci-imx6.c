@@ -2306,7 +2306,7 @@ pm_turnoff_sleep:
 	usleep_range(1000, 10000);
 }
 
-static int __imx6_pcie_suspend_noirq(struct device *dev, bool pm_turnoff)
+static int imx6_pcie_suspend_noirq(struct device *dev)
 {
 	struct imx6_pcie *imx6_pcie = dev_get_drvdata(dev);
 
@@ -2323,23 +2323,12 @@ static int __imx6_pcie_suspend_noirq(struct device *dev, bool pm_turnoff)
 				   IMX6Q_GPR1_PCIE_TEST_PD,
 				   IMX6Q_GPR1_PCIE_TEST_PD);
 	} else {
-		if (pm_turnoff)
-			imx6_pcie_pm_turnoff(imx6_pcie);
+		imx6_pcie_pm_turnoff(imx6_pcie);
 		imx6_pcie_ltssm_disable(dev);
 		imx6_pcie_clk_disable(imx6_pcie);
 	}
 
 	return 0;
-}
-
-static int imx6_pcie_suspend_noirq(struct device *dev)
-{
-	return __imx6_pcie_suspend_noirq(dev, true);
-}
-
-static int imx6_pcie_freeze_noirq(struct device *dev)
-{
-	return __imx6_pcie_suspend_noirq(dev, false);
 }
 
 static int imx6_pcie_resume_noirq(struct device *dev)
@@ -2378,7 +2367,6 @@ static int imx6_pcie_resume_noirq(struct device *dev)
 static const struct dev_pm_ops imx6_pcie_pm_ops = {
 	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(imx6_pcie_suspend_noirq,
 				      imx6_pcie_resume_noirq)
-	.freeze_noirq = imx6_pcie_freeze_noirq,
 };
 
 static int imx6_pcie_probe(struct platform_device *pdev)
