@@ -1184,3 +1184,11 @@
 	/* IMX8QXP_PCIE_CTRL0_WAKE_B, SC_PAD_WAKEUP_FALL_EDGE, LINE 2 */
 	pad-wakeup = < IMX8QXP_PCIE_CTRL0_WAKE_B 5 2 >;
 };
+
+&emvsim0_lpcg {
+	status = "disabled";
+};
+
+&adc1_lpcg {
+	status = "disabled";
+};
