@@ -1036,6 +1036,11 @@ static void imx6_pcie_reset_dwc_pcie(struct imx6_pcie *imx6_pcie)
 	/* Will be called again imx6_pcie_assert_core_reset() */
 	imx6_pcie_clk_enable(imx6_pcie);
 
+	regmap_update_bits(imx6_pcie->iomuxc_gpr,
+			   IMX8QM_CSR_PHYX1_OFFSET,
+			   IMX8QM_PHY_APB_RSTN_0,
+			   0);
+
 	val = IMX8QM_CSR_PCIEB_OFFSET;
 	regmap_update_bits(imx6_pcie->iomuxc_gpr,
 			   val + IMX8QM_CSR_PCIE_CTRL2_OFFSET,
