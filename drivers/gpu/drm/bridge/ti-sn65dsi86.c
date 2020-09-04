@@ -804,11 +804,11 @@ static void ti_sn_bridge_enable(struct drm_bridge *bridge)
 	/* config video parameters */
 	ti_sn_bridge_set_video_timings(pdata);
 
+	drm_panel_enable(pdata->panel);
+	msleep(510);
 	/* enable video stream */
 	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, VSTREAM_ENABLE,
 			   VSTREAM_ENABLE);
-
-	drm_panel_enable(pdata->panel);
 }
 
 static void ti_sn_bridge_pre_enable(struct drm_bridge *bridge)
