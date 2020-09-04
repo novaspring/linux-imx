@@ -954,7 +954,7 @@ static irqreturn_t ti_sn_bridge_irq(int irq, void *data)
 {
 	struct ti_sn_bridge *pdata = data;
 	unsigned int status = 0;
-	u8 link_status[DP_LINK_STATUS_SIZE];
+	//u8 link_status[DP_LINK_STATUS_SIZE];
 	const char *last_err_str = "Retrain DP link";
 
 	/* Support only INSERTION and REMOVAL events */
