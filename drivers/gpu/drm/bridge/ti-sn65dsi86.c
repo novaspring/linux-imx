@@ -25,6 +25,7 @@
 #include <drm/drm_probe_helper.h>
 
 #define SN_DEVICE_REV_REG			0x08
+#define SN_SOFT_RESET				0x09
 #define SN_DPPLL_SRC_REG			0x0A
 #define  DPPLL_CLK_SRC_DSICLK			BIT(0)
 #define  REFCLK_FREQ_MASK			GENMASK(3, 1)
@@ -94,11 +95,15 @@
 #define  IRQ_HPD_INSERTION_EN		BIT(1)
 #define  IRQ_HPD_REMOVAL_EN			BIT(2)
 #define  IRQ_HPD_REPLUG_EN			BIT(3)
+#define SN_DPTL_IRQ_EN_REG			0xE7
+#define  LOSS_OF_DP_SYNC_IRQ		BIT(6)
 #define SN_AUX_HPD_STATUS_REG		0xF5
 #define  HPD_IRQ_STATUS				BIT(0)
 #define  HPD_INSERTION_EVENT		BIT(1)
 #define  HPD_REMOVAL_EVENT			BIT(2)
 #define  HPD_REPLUG_EVENT			BIT(3)
+#define SN_DPTL_ERR_REG				0xF6
+#define  LOSS_OF_DP_SYNC_LOCK_ERR	BIT(6)
 #define SN_PAGE_REG				0xFF
 #define SN_ASSR_OVRR_REG			0x16
 
@@ -825,6 +830,9 @@ static void ti_sn_bridge_pre_enable(struct drm_bridge *bridge)
 	regmap_update_bits(pdata->regmap, SN_HPD_DISABLE_REG, HPD_DISABLE,
 			   HPD_ENABLE);
 
+	regmap_update_bits(pdata->regmap, SN_DPTL_IRQ_EN_REG,
+					LOSS_OF_DP_SYNC_IRQ, LOSS_OF_DP_SYNC_IRQ);
+
 	drm_panel_prepare(pdata->panel);
 }
 
@@ -967,6 +975,14 @@ static irqreturn_t ti_sn_bridge_irq(int irq, void *data)
 		regmap_write(pdata->regmap, SN_PLL_ENABLE_REG, 0);
 		ti_sn_link_training(pdata, pdata->dp_rate_idx, &last_err_str);
     }
+
+	regmap_read(pdata->regmap, SN_DPTL_ERR_REG, &status);
+	regmap_write(pdata->regmap, SN_DPTL_ERR_REG, status);
+	if (status & LOSS_OF_DP_SYNC_LOCK_ERR) {
+		regmap_write(pdata->regmap, SN_SOFT_RESET, 0x01);
+		regmap_update_bits(pdata->regmap, SN_DPTL_ERR_REG,
+				LOSS_OF_DP_SYNC_LOCK_ERR, LOSS_OF_DP_SYNC_LOCK_ERR);
+	}
 
 	return IRQ_HANDLED;
 }
