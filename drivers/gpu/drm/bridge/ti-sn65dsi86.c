@@ -125,7 +125,7 @@
 #define SN_NUM_GPIOS			4
 #define SN_GPIO_PHYSICAL_OFFSET		1
 
-#define SN_LINK_TRAINING_TRIES		10
+#define SN_LINK_TRAINING_TRIES		15
 
 /**
  * struct ti_sn_bridge - Platform data for ti-sn65dsi86 driver.
