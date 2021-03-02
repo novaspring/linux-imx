@@ -127,6 +127,11 @@
 
 #define SN_LINK_TRAINING_TRIES		15
 
+static bool hpd_irq_enable = false;
+module_param_named(hpd_irq_support, hpd_irq_enable, bool, 0440);
+MODULE_PARM_DESC(hpd_irq_support,
+                 "Enable HPD_IRQ support [default=false]");
+
 /**
  * struct ti_sn_bridge - Platform data for ti-sn65dsi86 driver.
  * @dev:          Pointer to our device.
@@ -1160,8 +1165,16 @@ static int ti_sn_bridge_probe(struct i2c_client *client,
 		regmap_read(pdata->regmap, SN_AUX_HPD_STATUS_REG, &status);
 		regmap_write(pdata->regmap, SN_AUX_HPD_STATUS_REG, status);
 		/* Enable interrupts on insertion/removal and HPD_IRQ */
-		regmap_write(pdata->regmap, SN_IRQ_HPD_REG,
-						IRQ_HPD_INSERTION_EN | IRQ_HPD_REMOVAL_EN | HPD_IRQ_STATUS);
+		if (hpd_irq_enable) {
+			regmap_write(pdata->regmap, SN_IRQ_HPD_REG,
+				IRQ_HPD_INSERTION_EN |
+				IRQ_HPD_REMOVAL_EN |
+				HPD_IRQ_STATUS);
+		} else {
+			regmap_write(pdata->regmap, SN_IRQ_HPD_REG,
+				IRQ_HPD_INSERTION_EN |
+				IRQ_HPD_REMOVAL_EN);
+		}
 		regmap_write_bits(pdata->regmap, SN_IRQ_EN_REG, IRQ_EN, IRQ_EN);
 
 		ret = devm_request_threaded_irq(pdata->dev, client->irq, NULL,
