@@ -1,0 +1,19 @@
+/dts-v1/;
+
+#include "kontron-samx8x-dxp.dts"
+
+&flexcan1 {
+    status = "disabled";
+};
+
+&flexcan2 {
+    status = "disabled";
+};
+
+&flexspi0 {
+    status = "disabled";
+};
+
+&lpuart1 {
+    status = "disabled";
+};
