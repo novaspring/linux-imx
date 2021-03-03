@@ -686,9 +686,9 @@ static unsigned int ti_sn_get_max_lanes(struct ti_sn_bridge *pdata)
 			      "Can't read lane count (%d); assuming 4\n", ret);
 		return 4;
 	}
-	if ((data & DP_NUM_LANES_MASK) == 0) {
+	if ((data & DP_LANE_COUNT_MASK) == 0) {
 		DRM_DEV_ERROR(pdata->dev,
-			      "Wrong lane count (%ld); assuming 2\n", data & DP_NUM_LANES_MASK);
+			      "Wrong lane count (%d); assuming 2\n", data & DP_LANE_COUNT_MASK);
 		return 2;
 	}
 
