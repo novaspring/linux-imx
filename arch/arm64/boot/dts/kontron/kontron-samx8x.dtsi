@@ -1172,6 +1172,9 @@
 };
 
 &lsio_gpio3 {
+	pad-wakeup-num = <1>;
+	/* IMX8QXP_CSI_MCLK, SC_PAD_WAKEUP_FALL_EDGE, LINE 1 */
+	pad-wakeup = < IMX8QXP_CSI_MCLK 5 1 >;
 	gpio-line-names =
 		"GPIO10", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "",
