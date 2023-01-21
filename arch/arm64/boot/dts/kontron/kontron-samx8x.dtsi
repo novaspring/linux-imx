@@ -177,6 +177,7 @@
 		regulator-max-microvolt = <180000>;
 	};
 
+/*
 	sound: sound {
 		compatible = "fsl,imx-audio-wm8904";
 		cpu-dai = <&sai0>;
@@ -190,6 +191,7 @@
 			"IN2L", "Mic Jack",
 			"IN2R", "Mic Jack";
 	};
+*/
 
 	gpio-input {
 		compatible = "gpio-keys-polled";
@@ -216,12 +218,11 @@
 	};
 
 	lvds: display@0 {
-		compatible = "auo,g215hvn01_0";
+//		compatible = "auo,g215hvn01_0";
 //		compatible = "lg,ld101wx1-sl01";
 		label = "lvds";
 		power-supply = <&reg_bpl_v_3v3_s0>;
 
-/*
 // example for panel-lvds driver
 		compatible = "panel-lvds";
 		data-mapping = "jeida-24";
@@ -239,7 +240,6 @@
 			vfront-porch = <10>;
 			vback-porch = <50>;
 		};
-*/
 
 		port {
 			lvds_panel_in: endpoint {
@@ -293,15 +293,19 @@
 	};
 };
 
+// acm is for audio, defined in freescale (audio) dtsi
 &acm {
 	status = "okay";
 };
 
+// asrc0 is for audio, defined in freescale (audio) dtsi
 &asrc0 {
 	fsl,asrc-rate  = <48000>;
 	status = "okay";
 };
 
+// iomuxc is an io mux presumably, 
+// defined in freescale (SoC) dtsi, for example imx8qm/mm/ etc .dtsi
 &iomuxc {
 	samx8x {
 		pinctrl_csi0_lpi2c0: csi0lpi2c0grp {
@@ -652,6 +656,8 @@
 	pinctrl-0 = <&pinctrl_lpuart3>;
 };
 
+// fec1 is for ethernet, defined in freescale (SoC) dtsi, for example imx8qm/mm/mn/mq etc
+// (but also in imx8-ss-conn.dtsi)
 &fec1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
@@ -672,6 +678,7 @@
 	};
 };
 
+// For CAN controller, obviously
 &flexcan1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
@@ -682,6 +689,7 @@
 	pinctrl-0 = <&pinctrl_flexcan2>;
 };
 
+// SPI flash, it seems
 &flexspi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexspi0>;
@@ -696,6 +704,8 @@
 	};
 };
 
+// SPI bus definition, presumably
+// defined in ../freescale/imx8-ss-dma.dtsi
 &lpspi0 {
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -726,6 +736,8 @@
 */
 };
 
+// Clock controller
+// defined in ../freescale/imx8-ss-dma.dtsi
 &spi0_lpcg {
 	status = "disabled";
 };
@@ -799,6 +811,7 @@
 	};
 };
 
+// For audio, defined in freescale (audio) dts
 &sai0 {
 //	assigned-clocks = <&clk IMX8QXP_AUD_PLL0_DIV>,
 //			<&clk IMX8QXP_AUD_ACM_AUD_PLL_CLK0_DIV>,
@@ -814,6 +827,7 @@
 	status = "okay";
 };
 
+// USB OTG, obviously
 &usbotg1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbotg1>;
@@ -831,6 +845,7 @@
 	status = "okay";
 };
 
+// USB PHY
 &usbphy1 {
 	status = "okay";
 };
@@ -839,6 +854,9 @@
 	status = "okay";
 };
 
+// SDHC card - refers to mmc definition
+// defined in freescale (SoC) dtsi, for example imx8qm/mm/mn/mq etc
+// (but also in imx8-ss-conn.dtsi)
 &usdhc1 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc1>;
@@ -853,6 +871,7 @@
 	status = "okay";
 };
 
+// Another SD?
 &usdhc2 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
@@ -867,6 +886,8 @@
 	status = "okay";
 };
 
+// PCI bus definition
+// defined in ../freescale/imx8qm-ss-hsio.dtsi
 &pcieb {
 	ext_osc = <1>;
 	pinctrl-names = "default";
@@ -876,9 +897,13 @@
 	status = "okay";
 };
 
+// Pixel combiner
+// defined in ../freescale/imx8-ss-dc0.dtsi
 &dc0_pc {
 	status = "okay";
 };
+
+// Several other unknown subsystems under dc0:
 
 &dc0_prg1 {
 	status = "okay";
@@ -1031,6 +1056,8 @@
 	};
 };
 
+// AD converter??
+// defined in ../freescale/imx8-ss-dma.dtsi
 &adc0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_adc0>;
