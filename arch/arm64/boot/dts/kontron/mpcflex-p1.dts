@@ -1,0 +1,155 @@
+/*
+ * The code contained herein is licensed under the GNU General Public
+ * License. You may obtain a copy of the GNU General Public License
+ * Version 2 or later at the following locations:
+ *
+ * http://www.opensource.org/licenses/gpl-license.html
+ * http://www.gnu.org/copyleft/gpl.html
+ */
+
+/* MPCFlex platform by Berg Propulsion, built on Kontron SMARC module */
+
+/dts-v1/;
+
+#define KEEP_CPUS  /* From kontron BSP - not sure what it is for */
+
+#include "../freescale/imx8qxp.dtsi"
+#include "kontron-samx8x.dtsi"
+
+/ {
+	model = "MPCFlex pre-production P1 board";
+	compatible = "kontron,samx8x-dx", "fsl,imx8dx";
+
+	/* To be replaced by MAX98337A */
+/*
+	sound: sound {
+		audio-codec = <&wm8904>;
+		codec-master;
+	};
+*/
+
+	/* From kontron BSP, Not sure what it's needed for. */
+	reserved-memory {
+		/* global autoconfigured region for contiguous allocations */
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0 0x3c000000>;
+			alloc-ranges = <0 0x96000000 0 0x3c000000>;
+			linux,cma-default;
+		};
+	};
+};
+
+&lpuart0 {
+	status = "okay";
+};
+
+&lpuart1 {
+	status = "okay";
+};
+
+&lpuart2 {
+	status = "okay";
+};
+
+&lpuart3 {
+	status = "okay";
+};
+
+&flexcan1 {
+	status = "okay";
+};
+
+&flexcan2 {
+	status = "okay";
+};
+
+/*
+&i2c0 {
+	tca9554_out: gpio@22 {
+		compatible = "nxp,pca9554";
+		reg = <0x22>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		vcc-supply = <&reg_bpl_v_1v8_s5>;
+	};
+
+	tca9554_in: gpio@24 {
+		compatible = "nxp,pca9554";
+		reg = <0x24>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		vcc-supply = <&reg_bpl_v_1v8_s5>;
+	};
+
+	user: eeprom@57 {
+		compatible = "atmel,24c64";
+		reg = <0x57>;
+	};
+};
+*/
+
+/*
+&i2c3 {
+	tca9554_misc: gpio@20 {
+		compatible = "nxp,pca9554";
+		reg = <0x20>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		vcc-supply = <&reg_1v8_s0>;
+	};
+
+	wm8904: wm8904@1a {
+		compatible = "wlf,wm8904";
+		reg = <0x1a>;
+		clocks = <&mclkout0_lpcg 0>;
+		clock-names = "mclk";
+		clock-frequency = <24000000>;
+		micdet-cfg = <0x0>;
+		micdet-delay = <0x64>;
+		power-domains = <&pd IMX_SC_R_MCLK_OUT_0>;
+	};
+};
+*/
+
+// FROM smarc-evaluation-carrier-v2.dtsi, then reduced :
+/ {
+
+	reg_bpl_v_1v8_s5: regulator-carrier-1v8-s5 {
+		compatible = "regulator-fixed";
+		regulator-name = "bpl-v-1v8-s5";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+	};
+
+	reg_bpl_v_1v8_s0: regulator-carrier-1v8-s0 {
+		compatible = "regulator-fixed";
+		regulator-name = "bpl-v-1v8-s0";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+	};
+
+	reg_bpl_v_2v5_s0: regulator-carrier-2v5-s0 {
+		compatible = "regulator-fixed";
+		regulator-name = "bpl-v-2v5-s0";
+		regulator-min-microvolt = <2500000>;
+		regulator-max-microvolt = <2500000>;
+	};
+
+	reg_bpl_v_3v3_s0: regulator-carrier-3v3-s0 {
+		compatible = "regulator-fixed";
+		regulator-name = "bpl-v-3v3-s0";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+	};
+};
+
+/*&i2c0_mipi_lvds0 {
+	lcd_edid: eeprom@50 {
+		compatible = "atmel,24c04";
+		reg = <0x50>;
+	};
+};
+*/
+
