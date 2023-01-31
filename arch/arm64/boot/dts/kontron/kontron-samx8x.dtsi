@@ -218,27 +218,27 @@
 	};
 
 	lvds: display@0 {
-//		compatible = "auo,g215hvn01_0";
-//		compatible = "lg,ld101wx1-sl01";
 		label = "lvds";
 		power-supply = <&reg_bpl_v_3v3_s0>;
 
-// example for panel-lvds driver
 		compatible = "panel-lvds";
-		data-mapping = "jeida-24";
 
+         // To be checked:
 		width-mm = <476>;
 		height-mm = <268>;
+		data-mapping = "jeida-24";
+
+               // Parameters according to the 10.4 timing.pdf we received:
 		panel-timing {
-			clock-frequency = <144000000>;
-			hactive = <1920>;
-			vactive = <1080>;
-			hsync-len = <52>;
-			hfront-porch = <66>;
-			hback-porch = <66>;
-			vsync-len = <10>;
-			vfront-porch = <10>;
-			vback-porch = <50>;
+			hactive = <1024>;
+			vactive = <768>;
+			clock-frequency = <65000000>;
+			hsync-len = <30>;
+			hback-porch = <100>;
+			hfront-porch = <190>;
+			vsync-len = <5>;
+			vback-porch = <10>;
+			vfront-porch = <23>;
 		};
 
 		port {
@@ -266,6 +266,7 @@
 		default-brightness-level = <80>;
 	};
 
+        // We only have one display, so this should probably be deleted
 	lvds_backlight1: lvds_backlight@1 {
 		compatible = "pwm-backlight";
 		pwms = <&pwm_mipi_lvds1 0 5000000 0>;
