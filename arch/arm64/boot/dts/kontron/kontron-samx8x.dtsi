@@ -1096,8 +1096,8 @@
 		vpll-supply = <&reg_1v8_s0>;
 		vcc-supply = <&reg_1v2_s0>;
 
-//		sn-dsi-clock-divider = <6>;
-//		sn-dsi-lane-count = <4>;
+		sn-dsi-clk-divider = <6>;
+		sn-dsi-lane-count = <4>;
 //		lvds-de-neg-polarity;
 		lvds-channel-count = <2>;
 //		lvds-channel-count = <1>;
