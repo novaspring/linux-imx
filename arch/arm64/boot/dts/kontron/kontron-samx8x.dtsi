@@ -226,7 +226,7 @@
          // To be checked:
 		width-mm = <476>;
 		height-mm = <268>;
-		data-mapping = "jeida-24";
+		data-mapping = "vesa-24";
 
                // Parameters according to the 10.4 timing.pdf we received:
 		panel-timing {
