@@ -267,7 +267,7 @@
 	};
 
         // We only have one display, so this should probably be deleted
-	lvds_backlight1: lvds_backlight@1 {
+	/*lvds_backlight1: lvds_backlight@1 {
 		compatible = "pwm-backlight";
 		pwms = <&pwm_mipi_lvds1 0 5000000 0>;
 		enable-gpios = <&lsio_gpio1 0 GPIO_ACTIVE_HIGH>;
@@ -284,6 +284,7 @@
 				    100>;
 		default-brightness-level = <80>;
 	};
+*/
 
 	smarc_bat: gpio-charger0 {
 		compatible = "gpio-charger";
@@ -1099,9 +1100,9 @@
 		sn-dsi-clk-divider = <6>;
 		sn-dsi-lane-count = <4>;
 //		lvds-de-neg-polarity;
-		lvds-channel-count = <2>;
-//		lvds-channel-count = <1>;
-		lvds-set-24bpp-mode;
+//		lvds-channel-count = <2>;
+		lvds-channel-count = <1>;
+//		lvds-set-24bpp-mode;
 //		lvds-set-24bpp-format1;
 //		lvds-cha-vocm;
 //		lvds-chb-vocm;
