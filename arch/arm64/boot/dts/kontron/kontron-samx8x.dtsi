@@ -1102,7 +1102,7 @@
 //		lvds-de-neg-polarity;
 //		lvds-channel-count = <2>;
 //		lvds-channel-count = <1>;
-//		lvds-set-24bpp-mode = <1>;
+		lvds-set-24bpp-mode = <1>;
 //		lvds-set-24bpp-format1;
 //		lvds-cha-vocm = <0>;
 //		lvds-chb-vocm;
