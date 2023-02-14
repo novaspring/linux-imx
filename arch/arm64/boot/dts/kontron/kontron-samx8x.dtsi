@@ -1097,26 +1097,35 @@
 		vpll-supply = <&reg_1v8_s0>;
 		vcc-supply = <&reg_1v2_s0>;
 
-		sn-dsi-clk-divider = <3>;
-		sn-dsi-lane-count = <4>;
+//		sn-dsi-clk-divider = <3>;
+//		sn-dsi-lane-count = <4>;
 //		lvds-de-neg-polarity;
 //		lvds-channel-count = <2>;
-		lvds-channel-count = <1>;
-		lvds-set-24bpp-mode = <1>;
+//		lvds-channel-count = <1>;
+//		lvds-set-24bpp-mode = <1>;
 //		lvds-set-24bpp-format1;
-		lvds-cha-vocm = <0>;
+//		lvds-cha-vocm = <0>;
 //		lvds-chb-vocm;
-		lvds-cha-vod-swing = <2>;
+//Datasheet page 10, 200mV < VID < 600mV, no exact match but use 0b10 for  250mV < VOD < 430mV with 100Ω termination.
+//		lvds-cha-vod-swing = <2>;
 //		lvds-chb-vod-swing = <3>;
+
+// Should not affect, we could set something
 //		lvds-even-odd-swap;
-		lvds-cha-reverse = <0>;
+                // definitely should not reverse A/B outputs
+//		lvds-cha-reverse = <0>;
 //		lvds-chb-reverse;
-		lvds-cha-term = <0>;
-//		lvds-chb-term;
-		lvds-cha-cm-adjust = <0>;
+//		lvds-cha-term = <0>;
+//		lvds-chb-term = <0>;
+
+                // (adjusts the 1.2V level)
+//		lvds-cha-cm-adjust = <0>;
 //		lvds-chb-cm-adjust = <0>;
+
+                // uncertain, try something more than 32...
+                // 12 bit value
 //		sn-sync-delay = <39>;
-		dsi-burst-mode;
+//		dsi-burst-mode = <0>;
 
 		/*
 		   Clocks - do not populate(!), it would switch
