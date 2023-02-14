@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 NXP
+ * Copyright 2023 Berg Propulsion
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,6 +12,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+// This file now reflects the mpcflex hardware.
+// In other words it contains the same as mpcflex.dts or mpcflex-p1.dts
+// However, since the bootloaders are currently coded to load this file
+// it will temporarily be (mis)named as: kontron-samx8x.
+
+// Furthermore, content is split between kontron-samx8x.dtsi
+// and kontron-samx8x-qxp.dts.  That is a normal setup to specify the whole
+// range of capabilities in the dtsi, and then refine the actual hardware usage
+// in the dts.  However, in this case the content regarding the
+// system-on-module and the Evaluation carrier board seems to be slightly mixed
+// up.
 
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/usb/pd.h>
@@ -217,18 +230,20 @@
 		};
 	};
 
+	// Quick references to related files:
+	// Driver: ../../../../../drivers/gpu/drm/panel/panel-simple.c
+	// The main DTS file: ./kontron-samx8x-qxp.dts
 	lvds: display@0 {
 		label = "lvds";
 		power-supply = <&reg_bpl_v_3v3_s0>;
-
 		compatible = "panel-lvds";
-
-         // To be checked:
-		width-mm = <476>;
-		height-mm = <268>;
 		data-mapping = "vesa-24";
 
-               // Parameters according to the 10.4 timing.pdf we received:
+		// Unspecified for now:
+		// width-mm = <476>;
+		// height-mm = <268>;
+
+		// Parameters according to the 10.4 timing.pdf we received:
 		panel-timing {
 			hactive = <1024>;
 			vactive = <768>;
@@ -1097,42 +1112,48 @@
 		vpll-supply = <&reg_1v8_s0>;
 		vcc-supply = <&reg_1v2_s0>;
 
-//		sn-dsi-clk-divider = <3>;
-//		sn-dsi-lane-count = <4>;
-//		lvds-de-neg-polarity;
-//		lvds-channel-count = <2>;
-//		lvds-channel-count = <1>;
+		// In the end we use almost only default settings
+		// here.  Except, it is necessary to set 8-bit color
+		// depth (8 * 3 = 24bpp mode) for our display
 		lvds-set-24bpp-mode = <1>;
-//		lvds-set-24bpp-format1;
-//		lvds-cha-vocm = <0>;
-//		lvds-chb-vocm;
-//Datasheet page 10, 200mV < VID < 600mV, no exact match but use 0b10 for  250mV < VOD < 430mV with 100Ω termination.
-//		lvds-cha-vod-swing = <2>;
-//		lvds-chb-vod-swing = <3>;
 
-// Should not affect, we could set something
-//		lvds-even-odd-swap;
-                // definitely should not reverse A/B outputs
-//		lvds-cha-reverse = <0>;
-//		lvds-chb-reverse;
-//		lvds-cha-term = <0>;
-//		lvds-chb-term = <0>;
+		// These are the values we believe are correct
+		// ... but in the end it was not necessary to set them 
+		// (the defaults work)
+		// sn-dsi-clk-divider = <3>;
+		// sn-dsi-lane-count = <4>;
+		// lvds-de-neg-polarity;
+		// lvds-channel-count = <2>;
+		// lvds-channel-count = <1>;
+		// lvds-set-24bpp-format1;
+		// lvds-cha-vocm = <0>;
+		// lvds-chb-vocm;
 
-                // (adjusts the 1.2V level)
-//		lvds-cha-cm-adjust = <0>;
-//		lvds-chb-cm-adjust = <0>;
+		// Datasheet page 10, 200mV < VID < 600mV, no exact match but use 0b10 for  250mV < VOD < 430mV with 100Ω termination.
+		// lvds-cha-vod-swing = <2>;
+		// lvds-chb-vod-swing = <3>;
 
-                // uncertain, try something more than 32...
-                // 12 bit value
-//		sn-sync-delay = <39>;
-//		dsi-burst-mode = <0>;
+		// Should not affect, we could set something
+		// lvds-even-odd-swap;  // definitely No
+		// definitely should not reverse A/B outputs
+		// lvds-cha-reverse = <0>;
+		// lvds-chb-reverse;
+		// lvds-cha-term = <0>;
+		// lvds-chb-term = <0>;
 
-		/*
-		   Clocks - do not populate(!), it would switch
-		   the chip to external refclk, instead of DSI.
-		*/
-		//clock-names = "refclk";
-		//clocks = <&clk IMX8QXP_CLK_DUMMY>;
+		// (adjusts the 1.2V level)
+		// lvds-cha-cm-adjust = <0>;
+		// lvds-chb-cm-adjust = <0>;
+
+		// uncertain, try something more than 32...
+		// 12 bit value, so can be up to 4095?
+		// sn-sync-delay = <39>;
+		// dsi-burst-mode = <0>;
+
+		// Clocks - do not populate(!), it would switch
+		// the chip to external refclk, instead of DSI.
+		// clock-names = "refclk";
+		// clocks = <&clk IMX8QXP_CLK_DUMMY>;
 
 		i2c-bus {
 			#address-cells = <1>;
