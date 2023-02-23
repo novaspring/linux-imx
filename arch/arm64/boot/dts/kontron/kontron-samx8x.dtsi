@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 NXP
+ * Copyright 2023 Berg Propulsion
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,6 +12,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+// This file now reflects the mpcflex hardware.
+// In other words it contains the same as mpcflex.dts or mpcflex-p1.dts
+// However, since the bootloaders are currently coded to load this file
+// it will temporarily be (mis)named as: kontron-samx8x.
+
+// Furthermore, content is split between kontron-samx8x.dtsi
+// and kontron-samx8x-qxp.dts.  That is a normal setup to specify the whole
+// range of capabilities in the dtsi, and then refine the actual hardware usage
+// in the dts.  However, in this case the content regarding the
+// system-on-module and the Evaluation carrier board seems to be slightly mixed
+// up.
 
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/usb/pd.h>
@@ -217,19 +230,36 @@
 		};
 	};
 
+	// Quick references to related files:
+	// Driver: ../../../../../drivers/gpu/drm/panel/panel-simple.c
+	// The main DTS file: ./kontron-samx8x-qxp.dts
 	lvds: display@0 {
+		// Berg Propulsion / MPC Flex:
+		// AUO is NOT our actual display but a working driver is
+		// through this selected anyhow. Setting compatible =
+		// "panel-lvds" seemed to not work.
+		// A few default settings are applied by the driver because of
+		// the compatible string that is set, and some of those may be
+		// required (not fully sorted out for each parameter).  Note
+		// that the driver ALSO overrides these default settings based
+		// on what we have specified here in the device tree
+		// (panel-timing for example)
+
 		compatible = "auo,g215hvn01_0";
-//		compatible = "lg,ld101wx1-sl01";
+
 		label = "lvds";
 		power-supply = <&reg_bpl_v_3v3_s0>;
 
-/*
-// example for panel-lvds driver
-		compatible = "panel-lvds";
-		data-mapping = "jeida-24";
+		// BP / MPCFlex: This is required, our panel does not use the jeida mapping
+		data-mapping = "vesa-24";
 
+		// BP / MPCFlex: The width/height settings might be incorrect but it does no
+		// harm here.
 		width-mm = <476>;
 		height-mm = <268>;
+
+		// BP / MPCFlex: These are the required timings for our display,
+		// as per the data sheet and information from the distributor.
 		panel-timing {
 			clock-frequency = <144000000>;
 			hactive = <1920>;
@@ -241,7 +271,6 @@
 			vfront-porch = <10>;
 			vback-porch = <50>;
 		};
-*/
 
 		port {
 			lvds_panel_in: endpoint {
@@ -1097,33 +1126,43 @@
 		vpll-supply = <&reg_1v8_s0>;
 		vcc-supply = <&reg_1v2_s0>;
 
-//		sn-dsi-clock-divider = <6>;
-//		sn-dsi-lane-count = <4>;
-//		lvds-de-neg-polarity;
+		// These are the values we believe are correct
+		// ... but in the end it was not necessary to set them 
+		// (the defaults work)
+		// sn-dsi-clk-divider = <3>;
+		// sn-dsi-lane-count = <4>;
+		// lvds-de-neg-polarity;
 		lvds-channel-count = <2>;
-//		lvds-channel-count = <1>;
 		lvds-set-24bpp-mode;
-//		lvds-set-24bpp-format1;
-//		lvds-cha-vocm;
-//		lvds-chb-vocm;
-//		lvds-cha-vod-swing = <3>;
-//		lvds-chb-vod-swing = <3>;
-//		lvds-even-odd-swap;
-//		lvds-cha-reverse;
-//		lvds-chb-reverse;
-//		lvds-cha-term;
-//		lvds-chb-term;
-//		lvds-cha-cm-adjust = <0>;
-//		lvds-chb-cm-adjust = <0>;
-//		sn-sync-delay = <39>;
+		// lvds-set-24bpp-format1;
+		// lvds-cha-vocm = <0>;
+		// lvds-chb-vocm;
+
+		// Datasheet page 10, 200mV < VID < 600mV, no exact match but use 0b10 for  250mV < VOD < 430mV with 100Ω termination.
+		// lvds-cha-vod-swing = <2>;
+		// lvds-chb-vod-swing = <3>;
+
+		// Should not affect, we could set something
+		// lvds-even-odd-swap;  // definitely No
+		// definitely should not reverse A/B outputs
+		// lvds-cha-reverse = <0>;
+		// lvds-chb-reverse;
+		// lvds-cha-term = <0>;
+		// lvds-chb-term = <0>;
+
+		// (adjusts the 1.2V level)
+		// lvds-cha-cm-adjust = <0>;
+		// lvds-chb-cm-adjust = <0>;
+
+		// uncertain, try something more than 32...
+		// 12 bit value, so can be up to 4095?
+		// sn-sync-delay = <39>;
 		dsi-burst-mode;
 
-		/*
-		   Clocks - do not populate(!), it would switch
-		   the chip to external refclk, instead of DSI.
-		*/
-		//clock-names = "refclk";
-		//clocks = <&clk IMX8QXP_CLK_DUMMY>;
+		// Clocks - do not populate(!), it would switch
+		// the chip to external refclk, instead of DSI.
+		// clock-names = "refclk";
+		// clocks = <&clk IMX8QXP_CLK_DUMMY>;
 
 		i2c-bus {
 			#address-cells = <1>;
