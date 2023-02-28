@@ -21,12 +21,12 @@
 	compatible = "kontron,samx8x-dx", "fsl,imx8dx";
 
 	/* To be replaced by MAX98337A */
-/*
+
 	sound: sound {
-		audio-codec = <&wm8904>;
-		codec-master;
+		audio-codec = <&max98337a>;
+		//codec-master;
 	};
-*/
+
 
 	/* From kontron BSP, Not sure what it's needed for. */
 	reserved-memory {
@@ -89,6 +89,21 @@
 	};
 };
 */
+
+
+&i2c3 {
+	max98337a: max98337a@1a {
+		compatible = "maxim,max98337a";
+		reg = <0x1a>;
+		clocks = <&mclkout0_lpcg 0>;
+		clock-names = "mclk";
+		clock-frequency = <24000000>;
+		micdet-cfg = <0x0>;
+		micdet-delay = <0x64>;
+		power-domains = <&pd IMX_SC_R_MCLK_OUT_0>;
+	};
+};
+
 
 /*
 &i2c3 {
