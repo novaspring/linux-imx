@@ -902,6 +902,44 @@ static const struct drm_display_mode auo_g215hvn01_0_mode = {
 	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC,
 };
 
+//mode=dotclock hdisp hsyncstart hsyncend htotal vdisp vsyncstart vsyncend vtotal hflag vflag
+//mode=65 1024 1214 1244 1344 768 791 796 806 +-hsync? +-vsync?
+
+static const struct drm_display_mode mpcflex_mode = {
+	.clock = 65000,
+	.hdisplay = 1024,
+	.vdisplay = 768,
+	.hsync_start = 1214,
+	.hsync_end = 1243,
+	.htotal = 1343,
+	.vsync_start = 791,
+	.vsync_end = 795,
+	.vtotal = 805,
+	.vrefresh = 60,
+	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC,
+};
+/*
+   hactive = <1024>;
+   vactive = <768>;
+   hsync-len = <30>;
+   hback-porch = <100>;
+   hfront-porch = <190>;
+   vsync-len = <5>;
+   vback-porch = <10>;
+   vfront-porch = <23>;
+   */
+
+static const struct panel_desc mpcflex = {
+	.modes = &mpcflex_mode,
+	.num_modes = 1,
+	.bpc = 8,
+	.size = {
+		//Fixme
+		.width = 476,
+		.height = 268,
+	},
+};
+
 static const struct panel_desc auo_g215hvn01_0 = {
 	.modes = &auo_g215hvn01_0_mode,
 	.num_modes = 1,
@@ -3513,6 +3551,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "auo,g215hvn01_0",
 		.data = &auo_g215hvn01_0,
+	}, {
+		.compatible = "mpcflex",
+		.data = &mpcflex,
 	}, {
 		.compatible = "auo,p320hvn03",
 		.data = &auo_p320hvn03,
