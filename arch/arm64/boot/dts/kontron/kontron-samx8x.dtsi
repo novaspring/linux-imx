@@ -245,7 +245,8 @@
 		// on what we have specified here in the device tree
 		// (panel-timing for example)
 
-		compatible = "auo,g215hvn01_0";
+		//compatible = "auo,g215hvn01_0";
+		compatible = "panel-lvds";
 
 		label = "lvds";
 		power-supply = <&reg_bpl_v_3v3_s0>;
