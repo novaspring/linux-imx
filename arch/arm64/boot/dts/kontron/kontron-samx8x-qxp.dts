@@ -20,10 +20,8 @@
 	model = "MPCFlex pre-production P1 board";
 	compatible = "kontron,samx8x-dx", "fsl,imx8dx";
 
-	/* To be replaced by MAX98337A */
-
 	sound: sound {
-		audio-codec = <&max98337a>;
+		audio-codec = <&max98357a>;
 		//codec-master;
 	};
 
@@ -92,8 +90,8 @@
 
 
 &i2c3 {
-	max98337a: max98337a@1a {
-		compatible = "maxim,max98337a";
+	max98357a: max98357a@1a {
+		compatible = "maxim,max98357a";
 		reg = <0x1a>;
 		clocks = <&mclkout0_lpcg 0>;
 		clock-names = "mclk";
