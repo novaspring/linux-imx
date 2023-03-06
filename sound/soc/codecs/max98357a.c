@@ -29,7 +29,7 @@ static int max98357a_daiops_trigger(struct snd_pcm_substream *substream,
 {
 	struct max98357a_priv *max98357a = snd_soc_dai_get_drvdata(dai);
 
-	printk("max98357a_daiops_trigger: entered\n");
+	printk(KERN_WARNING "max98357a_daiops_trigger: entered\n");
 	if (!max98357a->sdmode)
 		return 0;
 
@@ -100,7 +100,7 @@ static int max98357a_platform_probe(struct platform_device *pdev)
 	struct max98357a_priv *max98357a;
 	int ret;
 
-	printk("called: max98357a_platform_probe\n");
+	printk(KERN_WARNING "called: max98357a_platform_probe\n");
 	max98357a = devm_kzalloc(&pdev->dev, sizeof(*max98357a), GFP_KERNEL);
 	if (!max98357a)
 		return -ENOMEM;
@@ -109,7 +109,7 @@ static int max98357a_platform_probe(struct platform_device *pdev)
 				"sdmode", GPIOD_OUT_LOW);
 	if (IS_ERR(max98357a->sdmode))
 	{
-		printk("max98357a_platform_probe: returning PTR_ERR after devm_gpiod_get_optional\n");
+		printk(KERN_WARNING "max98357a_platform_probe: returning PTR_ERR after devm_gpiod_get_optional\n");
 		return PTR_ERR(max98357a->sdmode);
 	}
 
@@ -120,7 +120,7 @@ static int max98357a_platform_probe(struct platform_device *pdev)
 		dev_dbg(&pdev->dev,
 			"no optional property 'sdmode-delay' found, "
 			"default: no delay\n");
-		printk("max98357a_platform_probe: no sdmode-delay found\n");
+		printk(KERN_WARNING "max98357a_platform_probe: no sdmode-delay found\n");
 	}
 
 	dev_set_drvdata(&pdev->dev, max98357a);
@@ -129,7 +129,7 @@ static int max98357a_platform_probe(struct platform_device *pdev)
 			&max98357a_component_driver,
 			&max98357a_dai_driver, 1);
 
-	printk("max98357a_platform_probe: Exit with ret = %d", ret);
+	printk(KERN_WARNING "max98357a_platform_probe: Exit with ret = %d", ret);
 	return ret;
 }
 
