@@ -22,7 +22,7 @@
 
 	sound: sound {
 		audio-codec = <&max98357a>;
-		//codec-master;
+		codec-master;
 	};
 
 
@@ -90,7 +90,7 @@
 
 
 &i2c3 {
-	max98357a: max98357a@1a {
+	max98357a: max98357a@0 {
 		compatible = "maxim,max98357a";
 		reg = <0x1a>;
 		clocks = <&mclkout0_lpcg 0>;
