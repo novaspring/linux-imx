@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 NXP
+ * Copyright 2023 Berg Propulsion
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,6 +12,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+// This file now reflects the mpcflex hardware.
+// In other words it contains the same as mpcflex.dts or mpcflex-p1.dts
+// However, since the bootloaders are currently coded to load this file
+// it will temporarily be (mis)named as: kontron-samx8x.
+
+// Furthermore, content is split between kontron-samx8x.dtsi
+// and kontron-samx8x-qxp.dts.  That is a normal setup to specify the whole
+// range of capabilities in the dtsi, and then refine the actual hardware usage
+// in the dts.  However, in this case the content regarding the
+// system-on-module and the Evaluation carrier board seems to be slightly mixed
+// up.
 
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/usb/pd.h>
@@ -217,28 +230,31 @@
 		};
 	};
 
+	// Quick references to related files:
+	// Driver: ../../../../../drivers/gpu/drm/panel/panel-simple.c
+	// The main DTS file: ./kontron-samx8x-qxp.dts
 	lvds: display@0 {
-//		compatible = "auo,g215hvn01_0";
-//		compatible = "lg,ld101wx1-sl01";
 		label = "lvds";
 		power-supply = <&reg_bpl_v_3v3_s0>;
-
-// example for panel-lvds driver
 		compatible = "panel-lvds";
-		data-mapping = "jeida-24";
+		data-mapping = "vesa-24";
 
+		// Width/Height is required! (the actual size might not be correct
+		// right now, but some values must be set)
 		width-mm = <476>;
 		height-mm = <268>;
+
+		// Parameters according to the 10.4 timing.pdf we received:
 		panel-timing {
-			clock-frequency = <144000000>;
-			hactive = <1920>;
-			vactive = <1080>;
-			hsync-len = <52>;
-			hfront-porch = <66>;
-			hback-porch = <66>;
-			vsync-len = <10>;
-			vfront-porch = <10>;
-			vback-porch = <50>;
+			hactive = <1024>;
+			vactive = <768>;
+			clock-frequency = <65000000>;
+			hsync-len = <30>;
+			hback-porch = <100>;
+			hfront-porch = <190>;
+			vsync-len = <5>;
+			vback-porch = <10>;
+			vfront-porch = <23>;
 		};
 
 		port {
@@ -266,7 +282,8 @@
 		default-brightness-level = <80>;
 	};
 
-	lvds_backlight1: lvds_backlight@1 {
+        // We only have one display, so this should probably be deleted
+	/*lvds_backlight1: lvds_backlight@1 {
 		compatible = "pwm-backlight";
 		pwms = <&pwm_mipi_lvds1 0 5000000 0>;
 		enable-gpios = <&lsio_gpio1 0 GPIO_ACTIVE_HIGH>;
@@ -283,6 +300,7 @@
 				    100>;
 		default-brightness-level = <80>;
 	};
+*/
 
 	smarc_bat: gpio-charger0 {
 		compatible = "gpio-charger";
@@ -1095,33 +1113,44 @@
 		vpll-supply = <&reg_1v8_s0>;
 		vcc-supply = <&reg_1v2_s0>;
 
-//		sn-dsi-clock-divider = <6>;
-//		sn-dsi-lane-count = <4>;
-//		lvds-de-neg-polarity;
-		lvds-channel-count = <2>;
-//		lvds-channel-count = <1>;
-		lvds-set-24bpp-mode;
-//		lvds-set-24bpp-format1;
-//		lvds-cha-vocm;
-//		lvds-chb-vocm;
-//		lvds-cha-vod-swing = <3>;
-//		lvds-chb-vod-swing = <3>;
-//		lvds-even-odd-swap;
-//		lvds-cha-reverse;
-//		lvds-chb-reverse;
-//		lvds-cha-term;
-//		lvds-chb-term;
-//		lvds-cha-cm-adjust = <0>;
-//		lvds-chb-cm-adjust = <0>;
-//		sn-sync-delay = <39>;
-		dsi-burst-mode;
+		// Clock divider = 2 is supposedly the driver default but for
+		// some reason it does not work properly when set to 2
+		// explicitly?  Leaving it unset works!
+		//sn-dsi-clk-divider = <2>;
 
-		/*
-		   Clocks - do not populate(!), it would switch
-		   the chip to external refclk, instead of DSI.
-		*/
-		//clock-names = "refclk";
-		//clocks = <&clk IMX8QXP_CLK_DUMMY>;
+		sn-dsi-lane-count = <4>;
+		lvds-channel-count = <1>;
+		lvds-set-24bpp-mode = <1>;
+
+		// Datasheet page 10, 200mV < VID < 600mV, no exact
+		// match but use 0b10 for  250mV < VOD < 430mV with
+		// 100Ω termination.
+		lvds-cha-vod-swing = <0x02>;
+		lvds-chb-vod-swing = <0x02>;
+
+		// (cm-adjust, adjusts the 1.2V voltage level)
+		lvds-cha-cm-adjust = <0>;
+		lvds-chb-cm-adjust = <0>;
+
+		// sn-sync-delay: We are a bit uncertain on the value, but try
+		// something more than 32 (which is default).  32 seems near the
+		// limit of specs.  It's a 12 bit value, so can be up to 4095??
+		sn-sync-delay = <40>; // This seems OK, 32 also works OK.
+
+		// lvds-cha-vocm = false.  Also unnecessary if lvds-cha-cm-adjust
+                // is set explicitly (above).  Same for channel b.
+		// do not set: lvds-cha-vocm;
+		// do not set: lvds-chb-vocm;
+
+		// These booleans should be un-set
+		// do not set: lvds-de-neg-polarity;
+		// do not set: lvds-set-24bpp-format1;
+		// do not set: lvds-even-odd-swap;
+		// do not set: lvds-cha-reverse;
+		// do not set: lvds-chb-reverse;
+		// do not set: lvds-cha-term;
+		// do not set: lvds-chb-term;
+		// do not set: dsi-burst-mode;
 
 		i2c-bus {
 			#address-cells = <1>;
