@@ -14,16 +14,23 @@
  */
 
 // This file now reflects the mpcflex hardware.
+
 // In other words it contains the same as mpcflex.dts or mpcflex-p1.dts
 // However, since the bootloaders are currently coded to load this file
-// it will temporarily be (mis)named as: kontron-samx8x.
+// it will temporarily be (mis)named using the original BSP naming:
+// kontron-samx8x-* ...
 
-// Furthermore, content is split between kontron-samx8x.dtsi
-// and kontron-samx8x-qxp.dts.  That is a normal setup to specify the whole
-// range of capabilities in the dtsi, and then refine the actual hardware usage
-// in the dts.  However, in this case the content regarding the
-// system-on-module and the Evaluation carrier board seems to be slightly mixed
-// up.
+// Furthermore, content is still split between kontron-samx8x.dtsi and
+// kontron-samx8x-qxp.dts.  That is a normal setup to specify the whole range
+// of capabilities in the dtsi, and then refine the actual hardware usage in
+// the dts.  However, in this case the content did not appear to be perfectly split
+// and even some features unique to the Evaluation carrier board seemed to be
+// mixed into the files that are supposed to be generic for the SMARC
+// system-on-module only.  It is not ideal for a modular/flexible BSP, but
+// for our MPC Flex product-specific we should be more free to combine data
+// into a single description optimized for our purpose.
+// For now, we keep the dtsi/dts split at the moment to be more similar to the
+// original BSP files.
 
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/usb/pd.h>
