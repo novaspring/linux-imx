@@ -197,22 +197,6 @@
 		regulator-max-microvolt = <180000>;
 	};
 
-/*
-	sound: sound {
-		compatible = "fsl,imx-audio-wm8904";
-		cpu-dai = <&sai0>;
-		model = "imx-wm8904";
-		audio-routing =
-			"Headphone Jack", "HPOUTR",
-			"Headphone Jack", "HPOUTL",
-			"IN1L", "Line In Jack",
-			"IN1R", "Line In Jack",
-			"Mic Jack", "MICBIAS",
-			"IN2L", "Mic Jack",
-			"IN2R", "Mic Jack";
-	};
-*/
-
 	gpio-input {
 		compatible = "gpio-keys-polled";
 		pinctrl-names = "default";
