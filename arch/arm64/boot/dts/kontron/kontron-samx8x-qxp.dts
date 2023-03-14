@@ -37,6 +37,19 @@
 			linux,cma-default;
 		};
 	};
+
+        // Put audio chip in root of tree first
+	max98357a: max98357a@0 {
+		compatible = "maxim,max98357a";
+		reg = <0x1a>;
+		clocks = <&mclkout0_lpcg 0>;
+		clock-names = "mclk";
+		clock-frequency = <24000000>;
+		micdet-cfg = <0x0>;
+		micdet-delay = <0x64>;
+		power-domains = <&pd IMX_SC_R_MCLK_OUT_0>;
+	};
+
 };
 
 &lpuart0 {
@@ -85,21 +98,11 @@
 		compatible = "atmel,24c64";
 		reg = <0x57>;
 	};
+
+
 };
 */
 
-&i2c3 {
-	max98357a: max98357a@0 {
-		compatible = "maxim,max98357a";
-		reg = <0x1a>;
-		clocks = <&mclkout0_lpcg 0>;
-		clock-names = "mclk";
-		clock-frequency = <24000000>;
-		micdet-cfg = <0x0>;
-		micdet-delay = <0x64>;
-		power-domains = <&pd IMX_SC_R_MCLK_OUT_0>;
-	};
-};
 
 /*
 &i2c3 {
